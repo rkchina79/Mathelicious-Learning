@@ -809,7 +809,7 @@ function initP1(){
 function renderP1(){
   var s=p1State;
   if(!s.queue.length){p1Win();return;}
-  s.cur=s.queue[0];s.wrong=false;
+  s.cur=s.queue[0];s.wrong=false;s.attempts=0;
   document.getElementById('p1pf').style.width=(((10-s.queue.length)/10)*100)+'%';
   renderDots('p1dots',s.hist,10);
   var p=s.cur;
@@ -968,24 +968,36 @@ function setupP1Sliders(p){
 
 function p1Answer(btn){
   var chosen=String(btn.dataset.val),correct=String(p1State.cur.ans);
-  document.querySelectorAll('#p1area .choice-btn').forEach(function(b){b.disabled=true;});
   var fb=document.getElementById('p1fb'),nb=document.getElementById('p1nxt');
   if(chosen===correct){
+    // Lock all buttons on correct
+    document.querySelectorAll('#p1area .choice-btn').forEach(function(b){b.disabled=true;});
     btn.classList.add('correct');
     var pts=p1State.wrong?5:10;p1State.score+=pts;
     document.getElementById('p1score').textContent=p1State.score+' pts';
-    p1State.hist.push('ok');renderDots('p1dots',p1State.hist,8);
+    p1State.hist.push('ok');renderDots('p1dots',p1State.hist,10);
     fb.className='fb-box show fb-ok';
     fb.innerHTML='<strong>Correct!</strong> '+p1State.cur.explain+'<br><em style="opacity:.7;font-size:11px">+'+pts+' pts'+(p1State.wrong?' (partial)':'')+'</em>';
     nb.classList.add('vis');
   } else {
-    btn.classList.add('wrong');p1State.wrong=true;
-    p1State.hist.push('bad');renderDots('p1dots',p1State.hist,8);
+    // Wrong — just flash the button, do NOT disable others, allow retry
+    btn.classList.add('wrong');
+    p1State.wrong=true;
+    setTimeout(function(){btn.classList.remove('wrong');},600);
     fb.className='fb-box show fb-no';
-    fb.innerHTML='<strong>Not quite.</strong> '+p1State.cur.hint;
-    nb.classList.add('vis');
+    var msgs=[
+      'Look closely at how the y-values are changing as you slide closer &mdash; where do both sides seem to be heading?',
+      'Use the sliders to get both sides very close to the target x-value. What y-value does the graph approach?',
+      'Watch the y-values in the readout boxes as you slide inward &mdash; what number are they approaching?',
+      'Keep sliding both sliders toward the limit point. The y-values will tell you the answer!'
+    ];
+    var attempt=p1State.attempts=(p1State.attempts||0)+1;
+    var msg=msgs[Math.min(attempt-1,msgs.length-1)];
+    fb.innerHTML='<strong>Not quite &mdash; try again!</strong> '+msg;
+    // No next button on wrong answer
   }
 }
+
 function p1Next(){p1State.queue.shift();renderP1();}
 function p1Win(){
   document.getElementById('p1pf').style.width='100%';
@@ -1088,7 +1100,7 @@ function initP2(){
 function renderP2(){
   var s=p2State;
   if(!s.queue.length){p2Win();return;}
-  s.cur=s.queue[0];s.wrong=false;
+  s.cur=s.queue[0];s.wrong=false;s.attempts=0;
   document.getElementById('p2pf').style.width=(((10-s.queue.length)/10)*100)+'%';
   renderDots('p2dots',s.hist,10);
   var p=s.cur;
@@ -1271,24 +1283,32 @@ function setupP2Sliders(p){
 
 function p2Answer(btn){
   var chosen=String(btn.dataset.val),correct=String(p2State.cur.ans);
-  document.querySelectorAll('#p2area .choice-btn').forEach(function(b){b.disabled=true;});
   var fb=document.getElementById('p2fb'),nb=document.getElementById('p2nxt');
   if(chosen===correct){
+    document.querySelectorAll('#p2area .choice-btn').forEach(function(b){b.disabled=true;});
     btn.classList.add('correct');
     var pts=p2State.wrong?5:10;p2State.score+=pts;
     document.getElementById('p2score').textContent=p2State.score+' pts';
-    p2State.hist.push('ok');renderDots('p2dots',p2State.hist,8);
+    p2State.hist.push('ok');renderDots('p2dots',p2State.hist,10);
     fb.className='fb-box show fb-ok';
     fb.innerHTML='<strong>Correct!</strong> '+p2State.cur.explain+'<br><em style="opacity:.7;font-size:11px">+'+pts+' pts'+(p2State.wrong?' (partial)':'')+'</em>';
     nb.classList.add('vis');
   } else {
-    btn.classList.add('wrong');p2State.wrong=true;
-    p2State.hist.push('bad');renderDots('p2dots',p2State.hist,8);
+    btn.classList.add('wrong');
+    p2State.wrong=true;
+    setTimeout(function(){btn.classList.remove('wrong');},600);
     fb.className='fb-box show fb-no';
-    fb.innerHTML='<strong>Not quite.</strong> '+p2State.cur.hint;
-    nb.classList.add('vis');
+    var msgs=[
+      'Not quite &mdash; try again! Slide the slider(s) very close to the target x-value and watch what the y-values do.',
+      'Still not right. Look carefully at whether the left and right y-values are agreeing or disagreeing as they approach.',
+      'Keep trying! The readout boxes show the y-values in real time &mdash; what value are they heading toward?',
+      'Use the hint: '+p2State.cur.hint
+    ];
+    var attempt=p2State.attempts=(p2State.attempts||0)+1;
+    fb.innerHTML='<strong>Not quite &mdash; try again!</strong> '+msgs[Math.min(attempt-1,msgs.length-1)];
   }
 }
+
 function p2Next(){p2State.queue.shift();renderP2();}
 function p2Win(){
   document.getElementById('p2pf').style.width='100%';
