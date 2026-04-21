@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathelicious — Limits Quest</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0f0f13;--surface:#1a1a24;--surface2:#1e1e2e;--surface3:#26215C;
+  --border:#2e2e40;--border2:#534AB7;
+  --purple:#7F77DD;--purple2:#AFA9EC;--purple3:#CECBF6;
+  --green:#1D9E75;--green2:#9FE1CB;--green3:#04342C;
+  --teal:#5DCAA5;
+  --amber:#FAC775;--amber2:#412402;--amber3:#854F0B;
+  --red:#E24B4A;--red2:#501313;
+  --text:#e8e6f0;--text2:#888780;--text3:#5F5E5A;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── SCREENS ─────────────────────────────────────────────── */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+
+/* ── HUB ─────────────────────────────────────────────────── */
+#hub{padding:0;}
+.hub-hero{padding:3rem 1.5rem 2rem;max-width:780px;margin:0 auto;text-align:center;}
+.hub-brand{font-size:13px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--purple2);margin-bottom:.75rem;}
+.hub-title{font-size:clamp(36px,7vw,58px);font-weight:900;line-height:1.05;letter-spacing:-1.5px;margin-bottom:.75rem;}
+.hub-title .hl{color:var(--purple);}
+.hub-sub{font-size:16px;color:var(--text2);line-height:1.7;max-width:520px;margin:0 auto 2.5rem;}
+.hub-path{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:3rem;}
+.path-node{display:flex;align-items:center;gap:8px;}
+.path-dot{width:10px;height:10px;border-radius:50%;background:var(--purple);}
+.path-line{width:40px;height:2px;background:var(--border2);}
+.path-label{font-size:12px;font-weight:700;color:var(--purple2);}
+.parts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;max-width:780px;margin:0 auto;padding:0 1.5rem 3rem;}
+.part-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:all .2s ease;position:relative;overflow:hidden;}
+.part-card:hover{border-color:var(--border2);transform:translateY(-3px);}
+.part-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.p1-card::before{background:var(--green);}
+.p2-card::before{background:var(--teal);}
+.p3-card::before{background:var(--purple);}
+.part-num{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem;}
+.p1-card .part-num{color:var(--green2);}
+.p2-card .part-num{color:var(--teal);}
+.p3-card .part-num{color:var(--purple2);}
+.part-title{font-size:19px;font-weight:900;margin-bottom:.4rem;letter-spacing:-.3px;}
+.part-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:1.1rem;}
+.part-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1.25rem;}
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--surface3);color:var(--purple3);}
+.part-btn{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;border:none;cursor:pointer;width:100%;transition:all .15s;}
+.p1-card .part-btn{background:var(--green3);color:var(--green2);}
+.p1-card .part-btn:hover{background:var(--green);color:#fff;}
+.p2-card .part-btn{background:#04342C;color:var(--teal);}
+.p2-card .part-btn:hover{background:var(--teal);color:#0f0f13;}
+.p3-card .part-btn{background:var(--surface3);color:var(--purple3);}
+.p3-card .part-btn:hover{background:var(--purple);color:#fff;}
+.hub-footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);font-size:12px;color:var(--text3);}
+.hub-footer span{color:var(--purple2);}
+
+/* ── SHARED GAME UI ──────────────────────────────────────── */
+.game-wrap{max-width:680px;margin:0 auto;padding:1.5rem 1rem 3rem;}
+.game-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.back-btn{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;}
+.back-btn:hover{border-color:var(--border2);color:var(--purple3);}
+.game-title{font-size:20px;font-weight:900;letter-spacing:-.3px;}
+.score-pill{font-size:13px;font-weight:700;padding:6px 16px;border-radius:99px;font-family:'Space Mono',monospace;}
+.pbar{height:6px;border-radius:99px;margin-bottom:1.5rem;overflow:hidden;}
+.pfill{height:100%;border-radius:99px;transition:width .5s;}
+.drow{display:flex;gap:4px;align-items:center;}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+.sdot.lit{background:var(--green);}.sdot.bad{background:var(--red);}
+
+/* ── PART 1 & 2 SHARED (MCQ + sliders) ──────────────────── */
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1rem;}
+.cat-tag{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:.4rem;}
+.diff-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;margin-bottom:.5rem;letter-spacing:.05em;text-transform:uppercase;}
+.b-continuous{background:#E1F5EE;color:#085041;} .b-rational{background:#FAEEDA;color:#633806;}
+.b-dne{background:#FCEBEB;color:#791F1F;} .b-inf{background:var(--surface3);color:var(--purple3);}
+.b-onesided{background:#E1F5EE;color:#085041;} .b-squeeze{background:var(--surface3);color:var(--purple3);}
+.q-text{font-size:15px;font-weight:700;margin-bottom:.4rem;line-height:1.5;}
+.math-disp{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;text-align:center;padding:.75rem;margin:.5rem 0;background:var(--surface3);border-radius:10px;color:var(--purple2);line-height:2.2;}
+.math-disp sup{font-size:10px;line-height:0;vertical-align:super;}
+.lim-unit{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin-right:6px;line-height:1.2;}
+.lim-unit .lw{font-size:16px;font-weight:700;}
+.lim-unit .ls{font-size:11px;color:var(--purple3);}
+.hint-text{font-size:12px;color:var(--text2);font-style:italic;margin-bottom:.6rem;}
+.choices-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:.6rem 0;}
+.choice-btn{padding:11px 8px;border-radius:10px;font-size:15px;font-weight:700;font-family:'Space Mono',monospace;cursor:pointer;border:2px solid var(--border);background:var(--surface);color:var(--text);transition:all .15s;}
+.choice-btn:hover:not(:disabled){border-color:var(--purple);background:var(--surface3);color:var(--purple3);transform:translateY(-2px);}
+.choice-btn.correct{background:#EAF3DE;border-color:var(--green);color:#085041;animation:popIn .3s ease;}
+.choice-btn.wrong{background:#FCEBEB;border-color:var(--red);color:#501313;animation:shake .3s ease;}
+.choice-btn:disabled{cursor:not-allowed;}
+@keyframes popIn{0%{transform:scale(1);}50%{transform:scale(1.07);}100%{transform:scale(1);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.fb-box{border-radius:12px;padding:.85rem 1rem;font-size:13px;font-weight:600;line-height:1.6;margin-top:.5rem;display:none;}
+.fb-box.show{display:block;animation:fbIn .25s ease;}
+.fb-ok{background:var(--green3);color:var(--green2);border:1px solid var(--green);}
+.fb-no{background:var(--red2);color:#F09595;border:1px solid var(--red);}
+@keyframes fbIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.nxt-btn{display:none;width:100%;margin-top:.6rem;padding:11px;border:none;border-radius:10px;font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:background .15s;}
+.nxt-btn.vis{display:block;animation:fbIn .2s ease;}
+
+/* ── SLIDER EXPLORER (Parts 1+2) ────────────────────────── */
+.explorer{background:var(--surface2);border-radius:12px;padding:.9rem;margin:.6rem 0;}
+.exp-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;}
+.readouts{display:grid;gap:8px;margin-bottom:.6rem;}
+.r3{grid-template-columns:1fr 1fr 1fr;} .r2{grid-template-columns:1fr 1fr;}
+.rc{border-radius:10px;padding:.45rem .6rem;text-align:center;}
+.rc-label{font-size:10px;font-weight:700;margin-bottom:2px;}
+.rc-val{font-size:17px;font-weight:700;font-family:'Space Mono',monospace;}
+.cl{background:#E6F1FB;color:#0C447C;} .cm{background:var(--surface3);color:var(--purple3);}
+.cr{background:#EAF3DE;color:#085041;} .cd{background:#FCEBEB;color:#791F1F;}
+.ci{background:#FAEEDA;color:#633806;}
+.agree{font-size:11px;font-weight:700;text-align:center;padding:4px 12px;border-radius:99px;margin-bottom:.5rem;display:none;}
+.ag-y{background:#EAF3DE;color:#3B6D11;} .ag-n{background:#FCEBEB;color:#791F1F;} .ag-i{background:#FAEEDA;color:#633806;}
+.graph-wrap{position:relative;width:100%;height:180px;margin-bottom:.6rem;}
+.sliders{display:flex;flex-direction:column;gap:8px;}
+.sl-row{display:flex;align-items:center;gap:8px;}
+.sl-lbl{font-size:11px;font-weight:700;min-width:76px;padding:3px 7px;border-radius:6px;text-align:center;}
+.sll{background:#E6F1FB;color:#0C447C;} .slr{background:#EAF3DE;color:#085041;} .sls{background:var(--surface3);color:var(--purple3);}
+.sl-row input[type=range]{flex:1;}
+.sl-x{font-size:12px;font-weight:700;font-family:'Space Mono',monospace;min-width:48px;text-align:right;color:var(--text);}
+.sl-y{font-size:11px;font-weight:700;font-family:'Space Mono',monospace;min-width:50px;text-align:right;}
+.yl{color:#185FA5;} .yr{color:#0F6E56;} .ys{color:var(--purple);}
+
+/* ── PART 3 DRAG-DROP ────────────────────────────────────── */
+.mpill{display:inline-flex;font-size:11px;font-weight:800;padding:4px 12px;border-radius:99px;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;}
+.ms{background:var(--green3);color:var(--green2);border:1px solid #0F6E56;}
+.mf{background:var(--surface3);color:var(--purple3);border:1px solid var(--border2);}
+.mc{background:#4B1528;color:#F4C0D1;border:1px solid #993556;}
+.ml{background:var(--amber2);color:var(--amber);border:1px solid var(--amber3);}
+.mi{background:#042C53;color:#B5D4F4;border:1px solid #185FA5;}
+.p3-mbox{font-family:'Space Mono',monospace;font-size:17px;font-weight:700;text-align:center;padding:.85rem 1rem;margin:.5rem 0;background:var(--surface3);border-radius:12px;color:var(--purple2);line-height:1.5;}
+.p3-mbox sup{font-size:10px;line-height:0;vertical-align:super;}
+.p3-lim-unit{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin-right:6px;line-height:1.2;}
+.p3-lim-unit .lw{font-size:17px;font-weight:700;}
+.p3-lim-unit .ls{font-size:11px;color:var(--purple3);}
+.sbox{background:var(--surface2);border-radius:10px;padding:.6rem 1rem;margin-bottom:.75rem;font-size:12px;color:var(--text2);font-style:italic;border-left:3px solid var(--purple);}
+.p3-stitle{font-size:11px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;}
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:.5rem .75rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);transition:all .25s;}
+.srow.done{border-color:var(--green);background:var(--green3);}
+.snum{min-width:52px;height:22px;border-radius:4px;background:var(--purple);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;letter-spacing:.03em;padding:0 6px;text-transform:uppercase;}
+.done .snum{background:var(--green);}
+.scont{flex:1;font-family:'Space Mono',monospace;font-size:13px;line-height:2.4;display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+.scont sup{font-size:9px;line-height:0;vertical-align:super;}
+.snote{font-size:11px;color:var(--text2);font-family:'Nunito',sans-serif;font-style:italic;margin-left:6px;}
+.schk{font-size:14px;flex-shrink:0;width:22px;text-align:center;color:var(--text2);}
+.dz{display:inline-flex;align-items:center;justify-content:center;min-width:60px;height:30px;border:2px dashed var(--border2);border-radius:8px;background:var(--surface3);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--purple2);cursor:pointer;transition:all .18s;padding:0 8px;vertical-align:middle;}
+.dz sup{font-size:9px;line-height:0;vertical-align:super;}
+.dz.over{border-color:var(--purple2);background:#3C3489;transform:scale(1.05);}
+.dz.filled{border-style:solid;border-color:var(--green);background:#085041;color:var(--green2);cursor:default;}
+.dz.wrong{border-color:var(--red)!important;background:var(--red2)!important;animation:shk .35s;}
+@keyframes shk{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.ttitle{font-size:11px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;margin-top:.85rem;}
+.tpool{display:flex;flex-wrap:wrap;gap:10px;padding:.85rem;background:var(--surface2);border-radius:10px;min-height:56px;}
+.tile{display:inline-flex;align-items:center;justify-content:center;padding:7px 16px;background:#2a2a3a;border:2px solid var(--border2);border-radius:8px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--purple3);cursor:pointer;user-select:none;transition:all .15s;white-space:nowrap;-webkit-user-select:none;}
+.tile sup{font-size:9px;line-height:0;vertical-align:super;}
+.tile:hover{background:#3C3489;transform:translateY(-2px);border-color:var(--purple2);}
+.tile.sel{background:#3C3489;outline:2px solid var(--purple2);outline-offset:2px;transform:translateY(-2px);}
+.tile.ghost{opacity:.4;}
+.fb-hint{background:var(--amber2);color:var(--amber);border:1px solid var(--amber3);}
+.mnt{font-size:11px;color:var(--text3);margin-top:4px;font-style:italic;}
+.pctr{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:.3rem;}
+
+/* ── WIN SCREEN ──────────────────────────────────────────── */
+.win-screen{text-align:center;padding:2.5rem 1rem;}
+.win-emoji{font-size:48px;margin-bottom:.75rem;}
+.win-title{font-size:26px;font-weight:900;margin-bottom:.5rem;}
+.win-sub{font-size:14px;color:var(--text2);margin-bottom:1.25rem;line-height:1.7;}
+.win-note{background:var(--surface3);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.25rem;font-size:14px;color:var(--purple3);line-height:1.7;margin-bottom:1.25rem;}
+.win-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.wcta{padding:11px 24px;background:var(--purple);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:background .15s;}
+.wcta:hover{background:#534AB7;}
+.wcta2{background:var(--surface);color:var(--text);border:1.5px solid var(--border);}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     HUB SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="hub" class="screen active">
+  <div class="hub-hero">
+    <div class="hub-brand">Mathelicious Learning</div>
+    <h1 class="hub-title">Limits<br><span class="hl">Quest</span></h1>
+    <p class="hub-sub">Master calculus limits from first principles — graphically, conceptually, and algebraically. Three parts, zero memorisation.</p>
+    <div class="hub-path">
+      <div class="path-node"><div class="path-dot"></div><span class="path-label">Graphical</span></div>
+      <div class="path-line"></div>
+      <div class="path-node"><div class="path-dot"></div><span class="path-label">Conceptual</span></div>
+      <div class="path-line"></div>
+      <div class="path-node"><div class="path-dot"></div><span class="path-label">Algebraic</span></div>
+    </div>
+  </div>
+  <div class="parts-grid">
+    <div class="part-card p1-card" onclick="startPart(1)">
+      <div class="part-num">Part 1</div>
+      <div class="part-title">Graphical Limits</div>
+      <div class="part-desc">Explore limits visually using interactive dual sliders. See how left and right sides converge — or don't.</div>
+      <div class="part-pills">
+        <span class="pill">Continuous functions</span>
+        <span class="pill">Holes</span>
+        <span class="pill">Asymptotes</span>
+        <span class="pill">DNE</span>
+        <span class="pill">Infinity</span>
+      </div>
+      <button class="part-btn">Start Part 1 <span>&#8594;</span></button>
+    </div>
+    <div class="part-card p2-card" onclick="startPart(2)">
+      <div class="part-num">Part 2</div>
+      <div class="part-title">One-Sided &amp; Squeeze</div>
+      <div class="part-desc">Tackle left-hand and right-hand limits separately, then discover the Squeeze Theorem in action.</div>
+      <div class="part-pills">
+        <span class="pill">One-sided limits</span>
+        <span class="pill">DNE</span>
+        <span class="pill">Squeeze theorem</span>
+        <span class="pill">Oscillation</span>
+      </div>
+      <button class="part-btn">Start Part 2 <span>&#8594;</span></button>
+    </div>
+    <div class="part-card p3-card" onclick="startPart(3)">
+      <div class="part-num">Part 3</div>
+      <div class="part-title">Algebraic Methods</div>
+      <div class="part-desc">Drag and drop tiles to build step-by-step solutions using substitution, factoring, rationalisation and more.</div>
+      <div class="part-pills">
+        <span class="pill">Substitution</span>
+        <span class="pill">Factoring</span>
+        <span class="pill">Rationalisation</span>
+        <span class="pill">Limit laws</span>
+        <span class="pill">Infinity rule</span>
+      </div>
+      <button class="part-btn">Start Part 3 <span>&#8594;</span></button>
+    </div>
+  </div>
+  <div class="hub-footer">Built for <span>Mathelicious</span> &mdash; interactive calculus puzzles</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PART 1 SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="p1screen" class="screen">
+  <div class="game-wrap">
+    <div class="game-topbar">
+      <button class="back-btn" onclick="goHub()">&#8592; All parts</button>
+      <div class="game-title" style="color:var(--green2);">Part 1 &mdash; <span style="color:var(--text2);font-size:14px;font-weight:600;">Graphical Limits</span></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="drow" id="p1dots"></div>
+        <div class="score-pill" id="p1score" style="background:var(--green3);color:var(--green2);border:1.5px solid var(--green);">0 pts</div>
+      </div>
+    </div>
+    <div class="pbar" style="background:var(--green3);"><div class="pfill" id="p1pf" style="width:0%;background:var(--green);"></div></div>
+    <div id="p1area"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PART 2 SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="p2screen" class="screen">
+  <div class="game-wrap">
+    <div class="game-topbar">
+      <button class="back-btn" onclick="goHub()">&#8592; All parts</button>
+      <div class="game-title" style="color:var(--teal);">Part 2 &mdash; <span style="color:var(--text2);font-size:14px;font-weight:600;">One-sided &amp; Squeeze</span></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="drow" id="p2dots"></div>
+        <div class="score-pill" id="p2score" style="background:#04342C;color:var(--teal);border:1.5px solid var(--teal);">0 pts</div>
+      </div>
+    </div>
+    <div class="pbar" style="background:#04342C;"><div class="pfill" id="p2pf" style="width:0%;background:var(--teal);"></div></div>
+    <div id="p2area"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PART 3 SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="p3screen" class="screen">
+  <div class="game-wrap">
+    <div class="game-topbar">
+      <button class="back-btn" onclick="goHub()">&#8592; All parts</button>
+      <div class="game-title" style="color:var(--purple2);">Part 3 &mdash; <span style="color:var(--text2);font-size:14px;font-weight:600;">Algebraic Methods</span></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="drow" id="p3dots"></div>
+        <div class="score-pill" id="p3score" style="background:var(--surface3);color:var(--purple3);border:1.5px solid var(--border2);">0 pts</div>
+      </div>
+    </div>
+    <div class="pbar" style="background:var(--surface3);"><div class="pfill" id="p3pf" style="width:0%;background:var(--purple);"></div></div>
+    <div id="p3area"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════
+var activeChart = null;
+
+function goHub(){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('hub').classList.add('active');
+  if(activeChart){activeChart.destroy();activeChart=null;}
+}
+
+function startPart(n){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('p'+n+'screen').classList.add('active');
+  window.scrollTo(0,0);
+  if(n===1) initP1();
+  else if(n===2) initP2();
+  else initP3();
+}
+
+// ══════════════════════════════════════════════════════════════
+// SHARED HELPERS
+// ══════════════════════════════════════════════════════════════
+function sfn(fn,x){try{var v=fn(x);return(v===null||!isFinite(v)||Math.abs(v)>400)?null:v;}catch(e){return null;}}
+function fmtN(v,d){if(v===null)return'&#8734;';var dec=d!==undefined?d:2;var r=parseFloat(v.toFixed(dec));return r===Math.round(r)?String(Math.round(r)):r.toFixed(dec);}
+function shuffleArr(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function renderDots(id,hist,max){
+  var last=hist.slice(-max);
+  var h='';
+  for(var i=0;i<last.length;i++)h+='<div class="sdot '+(last[i]==='ok'?'lit':'bad')+'"></div>';
+  for(var j=last.length;j<max;j++)h+='<div class="sdot"></div>';
+  document.getElementById(id).innerHTML=h;
+}
+function drawChart(canvasId,p,mode){
+  var canvas=document.getElementById(canvasId);
+  if(!canvas)return null;
+  if(activeChart){activeChart.destroy();activeChart=null;}
+  var xMin=p.range[0],xMax=p.range[1];
+  var isDark=true;
+  var gc='rgba(255,255,255,0.07)',tc='#888780';
+  var N=220;
+  function pts(fn,skip){
+    var a=[];
+    for(var i=0;i<=N;i++){
+      var x=xMin+(xMax-xMin)*i/N;
+      if(skip!==undefined&&Math.abs(x-skip)<(xMax-xMin)/60){a.push({x:x,y:null});continue;}
+      var y=sfn(fn,x);
+      a.push({x:+x.toFixed(5),y:y===null?null:+y.toFixed(5)});
+    }
+    return a;
+  }
+  var ds=[];
+  if(mode==='squeeze'){
+    ds=[
+      {label:'g',data:pts(p.fnG),showLine:true,borderColor:'#378ADD',borderWidth:2,pointRadius:0,spanGaps:false,tension:0.05,fill:false},
+      {label:'h',data:pts(p.fnH),showLine:true,borderColor:'#1D9E75',borderWidth:2,pointRadius:0,spanGaps:false,tension:0.05,fill:false},
+      {label:'f',data:pts(p.fnF,0),showLine:true,borderColor:'#7F77DD',borderWidth:2.5,pointRadius:0,spanGaps:false,tension:0,fill:false},
+      {label:'gd',data:[],pointRadius:9,backgroundColor:'#378ADD',borderColor:'#fff',borderWidth:2,showLine:false},
+      {label:'fd',data:[],pointRadius:9,backgroundColor:'#7F77DD',borderColor:'#fff',borderWidth:2,showLine:false},
+      {label:'hd',data:[],pointRadius:9,backgroundColor:'#1D9E75',borderColor:'#fff',borderWidth:2,showLine:false}
+    ];
+  } else if(p.hasJump){
+    var cx=p.cx||0;
+    var fnL=function(x){return x<cx?sfn(p.fn,x):null;};
+    var fnR=function(x){return x>=cx?sfn(p.fn,x):null;};
+    ds=[
+      {label:'l',data:pts(fnL),showLine:true,borderColor:'#378ADD',borderWidth:2.5,pointRadius:0,spanGaps:false,tension:0,fill:false},
+      {label:'r',data:pts(fnR),showLine:true,borderColor:'#1D9E75',borderWidth:2.5,pointRadius:0,spanGaps:false,tension:0,fill:false},
+      {label:'open',data:[{x:cx,y:p.leftVal}],pointRadius:7,backgroundColor:'#26215C',borderColor:'#378ADD',borderWidth:2.5,showLine:false},
+      {label:'closed',data:[{x:cx,y:p.rightVal}],pointRadius:7,backgroundColor:'#1D9E75',borderColor:'#fff',borderWidth:2.5,showLine:false},
+      {label:'ld',data:[],pointRadius:10,backgroundColor:'#378ADD',borderColor:'#fff',borderWidth:2.5,showLine:false},
+      {label:'rd',data:[],pointRadius:10,backgroundColor:'#1D9E75',borderColor:'#fff',borderWidth:2.5,showLine:false},
+      {label:'ll',data:[],showLine:true,borderColor:'#378ADD',borderWidth:1.5,borderDash:[5,4],pointRadius:0,spanGaps:true,tension:0},
+      {label:'rl',data:[],showLine:true,borderColor:'#1D9E75',borderWidth:1.5,borderDash:[5,4],pointRadius:0,spanGaps:true,tension:0}
+    ];
+  } else if(p.hasFloor){
+    var segs=[];
+    for(var v=Math.floor(xMin);v<Math.ceil(xMax);v++){
+      var sp=[];
+      for(var ii=0;ii<=60;ii++){var xx=v+ii/60;if(xx>=xMin&&xx<xMax&&xx<v+1)sp.push({x:+xx.toFixed(4),y:v});}
+      segs.push({label:'s'+v,data:sp,showLine:true,borderColor:'#7F77DD',borderWidth:2.5,pointRadius:0,spanGaps:false,tension:0,fill:false});
+      segs.push({label:'op'+v,data:[{x:v,y:v-1}],pointRadius:6,backgroundColor:'#26215C',borderColor:'#7F77DD',borderWidth:2,showLine:false});
+      segs.push({label:'cl'+v,data:[{x:v,y:v}],pointRadius:6,backgroundColor:'#7F77DD',borderColor:'#fff',borderWidth:2,showLine:false});
+    }
+    ds=segs.concat([
+      {label:'ld',data:[],pointRadius:10,backgroundColor:'#378ADD',borderColor:'#fff',borderWidth:2.5,showLine:false},
+      {label:'ll',data:[],showLine:true,borderColor:'#378ADD',borderWidth:1.5,borderDash:[5,4],pointRadius:0,spanGaps:true,tension:0}
+    ]);
+  } else if(mode==='inf'){
+    ds=[
+      {label:'f',data:pts(p.fn),showLine:true,borderColor:'#7F77DD',borderWidth:2.5,pointRadius:0,spanGaps:false,tension:0,fill:false},
+      {label:'lim',data:[{x:xMin,y:p.cy},{x:xMax,y:p.cy}],showLine:true,borderColor:'#E24B4A',borderWidth:1.5,borderDash:[6,4],pointRadius:0,spanGaps:true,tension:0},
+      {label:'dot',data:[],pointRadius:10,backgroundColor:'#EF9F27',borderColor:'#fff',borderWidth:2.5,showLine:false},
+      {label:'vl',data:[],showLine:true,borderColor:'#EF9F27',borderWidth:1.5,borderDash:[5,4],pointRadius:0,spanGaps:true,tension:0}
+    ];
+  } else {
+    ds=[
+      {label:'f',data:pts(p.fn,p.cx!==null?p.cx:undefined),showLine:true,borderColor:'#7F77DD',borderWidth:2.5,pointRadius:0,spanGaps:false,tension:0,fill:false},
+      {label:'hole',data:(p.holeAt!==null&&p.cy!==null)?[{x:p.holeAt,y:p.cy}]:[],pointRadius:8,backgroundColor:'#26215C',borderColor:'#7F77DD',borderWidth:2.5,showLine:false},
+      {label:'ld',data:[],pointRadius:10,backgroundColor:'#378ADD',borderColor:'#fff',borderWidth:2.5,showLine:false},
+      {label:'rd',data:[],pointRadius:10,backgroundColor:'#1D9E75',borderColor:'#fff',borderWidth:2.5,showLine:false},
+      {label:'ll',data:[],showLine:true,borderColor:'#378ADD',borderWidth:1.5,borderDash:[5,4],pointRadius:0,spanGaps:true,tension:0},
+      {label:'rl',data:[],showLine:true,borderColor:'#1D9E75',borderWidth:1.5,borderDash:[5,4],pointRadius:0,spanGaps:true,tension:0}
+    ];
+  }
+  var yMinOpt=p.infApproach?-8:undefined, yMaxOpt=p.infApproach?2:undefined;
+  activeChart=new Chart(canvas,{
+    type:'scatter',data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:0},
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+        x:{type:'linear',grid:{color:gc},ticks:{color:tc,font:{size:11},maxTicksLimit:7,callback:function(v){return parseFloat(v).toFixed(1);}}},
+        y:{grid:{color:gc},min:yMinOpt,max:yMaxOpt,ticks:{color:tc,font:{size:11},maxTicksLimit:6,callback:function(v){return parseFloat(v).toFixed(1);}}}
+      }}
+  });
+  return activeChart;
+}
+
+// ══════════════════════════════════════════════════════════════
+// PART 1 DATA & LOGIC
+// ══════════════════════════════════════════════════════════════
+var P1 = [
+  {cat:'continuous',diff:'continuous',q:'Drag both sliders toward x = 3. Both sides meet &mdash; where do they land?',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;3</span></span>(x + 2)',
+   hint:'f(x) = x+2 is a line &mdash; smooth everywhere. Substitute x = 3.',
+   ans:'5',choices:['3','4','5','6'],
+   explain:'Both sides converge to 5. Continuous functions always have a limit equal to their value at that point.',
+   fn:function(x){return x+2;},cx:3,cy:5,range:[0.5,5.5],holeAt:null,mode:'dual',dneType:null},
+  {cat:'continuous',diff:'continuous',q:'A parabola &mdash; smooth and unbroken. Where do both sides meet?',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;2</span></span>x<sup>2</sup>',
+   hint:'Polynomials are always continuous. Just substitute x = 2.',
+   ans:'4',choices:['2','3','4','8'],
+   explain:'x&sup2; = 4 at x = 2. Both sliders converge smoothly to 4.',
+   fn:function(x){return x*x;},cx:2,cy:4,range:[0,4],holeAt:null,mode:'dual',dneType:null},
+  {cat:'rational-hole',diff:'rational',q:'This function has a HOLE at x = 2. Can the limit still exist? Drag both sliders and see.',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;2</span></span><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:14px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:14px;">x<sup>2</sup>&minus;4</span><span style="padding:0 3px;font-size:14px;">x&minus;2</span></span>',
+   hint:'Factor: x&sup2;&minus;4 = (x+2)(x&minus;2). Cancel (x&minus;2). What\'s left?',
+   ans:'4',choices:['0','2','4','DNE'],
+   explain:'The hole at x=2 means f(2) is undefined &mdash; but BOTH sides approach 4. A hole does NOT stop a limit!',
+   fn:function(x){return Math.abs(x-2)<0.015?null:(x*x-4)/(x-2);},cx:2,cy:4,range:[0,5],holeAt:2,mode:'dual',dneType:null},
+  {cat:'rational-hole',diff:'rational',q:'Another hole &mdash; at x = 3. Watch both sides converge.',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;3</span></span><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:14px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:14px;">x<sup>2</sup>&minus;9</span><span style="padding:0 3px;font-size:14px;">x&minus;3</span></span>',
+   hint:'x&sup2;&minus;9 = (x+3)(x&minus;3). Cancel (x&minus;3) to get x+3.',
+   ans:'6',choices:['3','5','6','DNE'],
+   explain:'Simplifies to x+3. At x=3 that\'s 6. Left and right limits both arrive at 6.',
+   fn:function(x){return Math.abs(x-3)<0.015?null:(x*x-9)/(x-3);},cx:3,cy:6,range:[0.5,6.5],holeAt:3,mode:'dual',dneType:null},
+  {cat:'rational-asymptote',diff:'rational',q:'Vertical asymptote at x = 0. Watch what happens as each side approaches.',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;0</span></span><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:14px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:14px;">1</span><span style="padding:0 3px;font-size:14px;">x</span></span>',
+   hint:'From the right (x > 0), 1/x &rarr; +&infin;. From the left (x < 0), 1/x &rarr; &minus;&infin;.',
+   ans:'DNE',choices:['0','1','&#8734;','DNE'],
+   explain:'Left side &rarr; &minus;&infin;, right side &rarr; +&infin;. They go in OPPOSITE directions &mdash; limit Does Not Exist.',
+   fn:function(x){return Math.abs(x)<0.03?null:1/x;},cx:0,cy:null,range:[-3,3],holeAt:null,mode:'dual',dneType:'asymptote'},
+  {cat:'dne-jump',diff:'dne',q:'This piecewise function JUMPS at x = 2. Watch the left and right sides disagree.',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;2</span></span>f(x) &nbsp; f(x) = x+1 if x&lt;2, &nbsp; 5 if x&ge;2',
+   hint:'Left side: x+1 as x&rarr;2&sup1; = 3. Right side: f(x) = 5. Do they match?',
+   ans:'DNE',choices:['3','4','5','DNE'],
+   explain:'Left limit = 3, right limit = 5. They don\'t agree &mdash; limit Does Not Exist. This is a jump discontinuity.',
+   fn:function(x){return x<2?x+1:5;},cx:2,cy:null,range:[0,4],holeAt:null,mode:'dual',jumpAt:2,leftVal:3,rightVal:5,dneType:'jump'},
+  {cat:'dne-jump',diff:'dne',q:'Another piecewise jump. Slide each side in and read the y-values carefully.',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;1</span></span>f(x) &nbsp; f(x) = 2x if x&lt;1, &nbsp; x+3 if x&ge;1',
+   hint:'From the left: 2(1) = 2. From the right: 1+3 = 4. Same limit?',
+   ans:'DNE',choices:['2','3','4','DNE'],
+   explain:'Left limit = 2, right limit = 4. Since 2 &ne; 4, the limit Does Not Exist.',
+   fn:function(x){return x<1?2*x:x+3;},cx:1,cy:null,range:[0,2.5],holeAt:null,mode:'dual',jumpAt:1,leftVal:2,rightVal:4,dneType:'jump'},
+  {cat:'inf',diff:'inf',q:'Slide x to very large values. Where does this rational function settle?',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;&#8734;</span></span><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:14px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:14px;">2x<sup>2</sup>+3</span><span style="padding:0 3px;font-size:14px;">x<sup>2</sup>+1</span></span>',
+   hint:'Divide top and bottom by x&sup2;. The fractional terms vanish.',
+   ans:'2',choices:['0','1','2','3'],
+   explain:'(2 + 3/x&sup2;) / (1 + 1/x&sup2;) &rarr; 2/1 = 2.',
+   fn:function(x){return(2*x*x+3)/(x*x+1);},cx:null,cy:2,range:[0.5,60],holeAt:null,mode:'inf',infDir:'pos',infLabel:'x &rarr; &infin;',infStart:2,infEnd:60,dneType:null}
+];
+
+var p1State={queue:[],score:0,hist:[],wrong:false,cur:null,fbIdx:0};
+
+function initP1(){
+  p1State={queue:P1.slice(),score:0,hist:[],wrong:false,cur:null,fbIdx:0};
+  renderP1();
+}
+
+function renderP1(){
+  var s=p1State;
+  if(!s.queue.length){p1Win();return;}
+  s.cur=s.queue[0];s.wrong=false;
+  document.getElementById('p1pf').style.width=(((8-s.queue.length)/8)*100)+'%';
+  renderDots('p1dots',s.hist,8);
+  var p=s.cur;
+  var catLabel='';
+  if(p.cat==='continuous')catLabel='Category: Continuous functions &mdash; limit always exists';
+  else if(p.cat==='rational-hole')catLabel='Category: Rational function with a hole &mdash; limit can still exist';
+  else if(p.cat==='rational-asymptote')catLabel='Category: Vertical asymptote &mdash; limit may not exist';
+  else if(p.cat==='dne-jump')catLabel='Category: Piecewise jump &mdash; limit Does Not Exist';
+  else if(p.cat==='inf')catLabel='Category: Limit at infinity';
+  var badgeClass=p.cat==='dne-jump'||p.cat==='rational-asymptote'?'b-dne':p.cat==='rational-hole'?'b-rational':p.cat==='inf'?'b-inf':'b-continuous';
+  var badgeLabel=p.cat==='dne-jump'||p.cat==='rational-asymptote'?'dne':p.cat==='rational-hole'?'rational':p.cat==='inf'?'inf':'continuous';
+  var ch=p.choices.map(function(c){return'<button class="choice-btn" data-val="'+c+'">'+c+'</button>';}).join('');
+  var explorerHTML=buildP1Explorer(p);
+  document.getElementById('p1area').innerHTML='<div class="card">'
+    +'<div class="cat-tag">'+catLabel+'</div>'
+    +'<span class="diff-badge '+badgeClass+'">'+badgeLabel+'</span>'
+    +'<div class="q-text">'+p.q+'</div>'
+    +'<div class="math-disp">'+p.mathHTML+'</div>'
+    +'<div class="hint-text">Hint: '+p.hint+'</div>'
+    +explorerHTML
+    +'<div class="choices-grid">'+ch+'</div>'
+    +'<div class="fb-box" id="p1fb"></div>'
+    +'<button class="nxt-btn" id="p1nxt" style="background:var(--green);" onclick="p1Next()">Next &#8594;</button>'
+    +'</div>';
+  document.querySelectorAll('#p1area .choice-btn').forEach(function(b){
+    b.addEventListener('click',function(){p1Answer(b);});
+  });
+  setTimeout(function(){setupP1Sliders(p);},50);
+}
+
+function buildP1Explorer(p){
+  if(p.mode==='inf'){
+    var sMin=+(p.infStart).toFixed(2),sMax=+(p.infEnd).toFixed(2);
+    var sInit=+(sMin+(sMax-sMin)*0.12).toFixed(2);
+    return'<div class="explorer">'
+      +'<div class="exp-title">Slide x to very large values &mdash; watch f(x) settle</div>'
+      +'<div class="readouts r2">'
+      +'<div class="rc ci"><div class="rc-label">f(x) now</div><div class="rc-val" id="p1curv">&#8212;</div></div>'
+      +'<div class="rc cm"><div class="rc-label">Limit as x &rarr; &infin;</div><div class="rc-val" id="p1limv">&#8212;</div></div>'
+      +'</div>'
+      +'<div id="p1badge" class="agree"></div>'
+      +'<div class="graph-wrap"><canvas id="p1gc" role="img" aria-label="Limit graph">Graph.</canvas></div>'
+      +'<div class="sliders"><div class="sl-row"><span class="sl-lbl sls">x &rarr; &infin;</span>'
+      +'<input type="range" id="p1slInf" min="'+sMin+'" max="'+sMax+'" step="0.5" value="'+sInit+'">'
+      +'<span class="sl-x" id="p1xInf">&#8212;</span><span class="sl-y ys" id="p1yInf">&#8212;</span>'
+      +'</div></div></div>';
+  }
+  var cx=p.cx!==null?p.cx:0,xMin=p.range[0],xMax=p.range[1],gap=xMax-xMin;
+  var Lmin=+(xMin+0.02).toFixed(2),Lmax=+(cx-0.05).toFixed(2);
+  var Rmin=+(cx+0.05).toFixed(2),Rmax=+(xMax-0.02).toFixed(2);
+  var Li=Math.max(Lmin,Math.min(Lmax,+(cx-gap*0.3).toFixed(2)));
+  var Ri=Math.max(Rmin,Math.min(Rmax,+(cx+gap*0.3).toFixed(2)));
+  var limCls=p.dneType?'cd':'cm';
+  var expTitle=p.dneType?'Watch the two sides &mdash; do they agree?':'Drag each slider toward x = '+fmtN(cx,0);
+  return'<div class="explorer">'
+    +'<div class="exp-title">'+expTitle+'</div>'
+    +'<div class="readouts r3">'
+    +'<div class="rc cl"><div class="rc-label">Left side</div><div class="rc-val" id="p1llv">&#8212;</div><div style="font-size:10px;margin-top:2px;color:#185FA5;">x&#8594;'+fmtN(cx,0)+'&sup1;</div></div>'
+    +'<div class="rc '+limCls+'"><div class="rc-label">Limit</div><div class="rc-val" id="p1limv">&#8212;</div></div>'
+    +'<div class="rc cr"><div class="rc-label">Right side</div><div class="rc-val" id="p1rlv">&#8212;</div><div style="font-size:10px;margin-top:2px;color:#0F6E56;">x&#8594;'+fmtN(cx,0)+'&#8314;</div></div>'
+    +'</div>'
+    +'<div id="p1badge" class="agree"></div>'
+    +'<div class="graph-wrap"><canvas id="p1gc" role="img" aria-label="Limit graph">Graph.</canvas></div>'
+    +'<div class="sliders">'
+    +'<div class="sl-row"><span class="sl-lbl sll">x&sup1; (left)</span><input type="range" id="p1slL" min="'+Lmin+'" max="'+Lmax+'" step="0.01" value="'+Li+'"><span class="sl-x" id="p1xlv">&#8212;</span><span class="sl-y yl" id="p1ylv">&#8212;</span></div>'
+    +'<div class="sl-row"><span class="sl-lbl slr">x&#8314; (right)</span><input type="range" id="p1slR" min="'+Rmin+'" max="'+Rmax+'" step="0.01" value="'+Ri+'"><span class="sl-x" id="p1xrv">&#8212;</span><span class="sl-y yr" id="p1yrv">&#8212;</span></div>'
+    +'</div></div>';
+}
+
+function setupP1Sliders(p){
+  var chartMode=p.mode==='inf'?'inf':(p.hasJump?'jump':p.holeAt!==null?'hole':'default');
+  var ch=drawChart('p1gc',p,p.mode==='inf'?'inf':(p.mode==='squeeze'?'squeeze':undefined));
+  if(p.mode==='inf'){
+    var sl=document.getElementById('p1slInf');
+    if(!sl)return;
+    function updInf(){
+      var x=parseFloat(sl.value),y=sfn(p.fn,x);
+      document.getElementById('p1xInf').textContent=x.toFixed(1);
+      document.getElementById('p1yInf').textContent='y='+fmtN(y);
+      document.getElementById('p1curv').innerHTML=fmtN(y);
+      document.getElementById('p1limv').innerHTML=fmtN(p.cy);
+      var b=document.getElementById('p1badge');
+      var settling=y!==null&&Math.abs(y-p.cy)<0.12;
+      b.style.display='block';
+      b.className=settling?'agree ag-y':'agree ag-i';
+      b.innerHTML=settling?'f(x) has settled toward the limit!':'Slide x further right to see the pattern';
+      if(ch){
+        var ds=ch.data.datasets;
+        var yBot=ch.scales.y?ch.scales.y.min:-5;
+        if(ds[2])ds[2].data=y!==null?[{x:x,y:y}]:[];
+        if(ds[3])ds[3].data=y!==null?[{x:x,y:yBot},{x:x,y:y}]:[];
+        ch.update('none');
+      }
+    }
+    sl.addEventListener('input',updInf);updInf();
+  } else {
+    var slL=document.getElementById('p1slL'),slR=document.getElementById('p1slR');
+    if(!slL||!slR)return;
+    var cx=p.cx!==null?p.cx:0;
+    function updDual(){
+      var xL=parseFloat(slL.value),xR=parseFloat(slR.value);
+      var yL=sfn(p.fn,xL),yR=sfn(p.fn,xR);
+      document.getElementById('p1xlv').textContent=xL.toFixed(2);
+      document.getElementById('p1xrv').textContent=xR.toFixed(2);
+      document.getElementById('p1ylv').textContent='y='+fmtN(yL);
+      document.getElementById('p1yrv').textContent='y='+fmtN(yR);
+      document.getElementById('p1llv').innerHTML=fmtN(yL);
+      document.getElementById('p1rlv').innerHTML=fmtN(yR);
+      var b=document.getElementById('p1badge'),lv=document.getElementById('p1limv');
+      var cL=Math.abs(xL-cx)<0.2,cR=Math.abs(xR-cx)<0.2;
+      if(p.dneType==='jump'){
+        if(cL&&cR&&yL!==null&&yR!==null){lv.textContent='DNE';b.style.display='block';b.className='agree ag-n';b.innerHTML='Left ('+fmtN(yL)+') &ne; Right ('+fmtN(yR)+') &mdash; Does Not Exist!';}
+        else{lv.textContent='?';b.style.display='block';b.className='agree ag-i';b.innerHTML='Slide both sides close to x='+fmtN(cx,0)+' to compare';}
+      } else if(p.dneType==='asymptote'){
+        if(yL===null||yR===null||(yL>5&&yR<-5)||(yL<-5&&yR>5)){lv.textContent='DNE';b.style.display='block';b.className='agree ag-n';b.innerHTML='Sides go opposite directions &mdash; Does Not Exist!';}
+        else{lv.textContent='?';b.style.display='block';b.className='agree ag-i';b.innerHTML='Slide closer to x=0 to see the asymptote';}
+      } else {
+        var agree=yL!==null&&yR!==null&&Math.abs(yL-yR)<0.15;
+        if(agree&&cL&&cR){lv.innerHTML=fmtN((yL+yR)/2);b.style.display='block';b.className='agree ag-y';b.innerHTML='Both sides meet &mdash; limit exists!';}
+        else if(agree){lv.innerHTML=fmtN((yL+yR)/2);b.style.display='block';b.className='agree ag-y';b.innerHTML='Left = Right &mdash; slide closer!';}
+        else{lv.textContent='?';b.style.display='block';b.className='agree ag-i';b.innerHTML='Slide both inward to see where they meet';}
+      }
+      if(ch){
+        var ds=ch.data.datasets;
+        var yBot=ch.scales.y?ch.scales.y.min:-5;
+        var off=p.jumpAt!==undefined?4:(p.holeAt!==null?2:2);
+        if(ds[off])ds[off].data=yL!==null&&Math.abs(yL)<200?[{x:xL,y:yL}]:[];
+        if(ds[off+1])ds[off+1].data=yR!==null&&Math.abs(yR)<200?[{x:xR,y:yR}]:[];
+        if(ds[off+2])ds[off+2].data=yL!==null&&Math.abs(yL)<200?[{x:xL,y:yBot},{x:xL,y:yL}]:[];
+        if(ds[off+3])ds[off+3].data=yR!==null&&Math.abs(yR)<200?[{x:xR,y:yBot},{x:xR,y:yR}]:[];
+        ch.update('none');
+      }
+    }
+    slL.addEventListener('input',updDual);slR.addEventListener('input',updDual);updDual();
+  }
+}
+
+function p1Answer(btn){
+  var chosen=String(btn.dataset.val),correct=String(p1State.cur.ans);
+  document.querySelectorAll('#p1area .choice-btn').forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('p1fb'),nb=document.getElementById('p1nxt');
+  if(chosen===correct){
+    btn.classList.add('correct');
+    var pts=p1State.wrong?5:10;p1State.score+=pts;
+    document.getElementById('p1score').textContent=p1State.score+' pts';
+    p1State.hist.push('ok');renderDots('p1dots',p1State.hist,8);
+    fb.className='fb-box show fb-ok';
+    fb.innerHTML='<strong>Correct!</strong> '+p1State.cur.explain+'<br><em style="opacity:.7;font-size:11px">+'+pts+' pts'+(p1State.wrong?' (partial)':'')+'</em>';
+    nb.classList.add('vis');
+  } else {
+    btn.classList.add('wrong');p1State.wrong=true;
+    p1State.hist.push('bad');renderDots('p1dots',p1State.hist,8);
+    fb.className='fb-box show fb-no';
+    fb.innerHTML='<strong>Not quite.</strong> '+p1State.cur.hint;
+    nb.classList.add('vis');
+  }
+}
+function p1Next(){p1State.queue.shift();renderP1();}
+function p1Win(){
+  document.getElementById('p1pf').style.width='100%';
+  var perf=p1State.hist.filter(function(h){return h==='ok';}).length;
+  document.getElementById('p1area').innerHTML='<div class="win-screen">'
+    +'<div class="win-emoji">&#127881;</div>'
+    +'<div class="win-title">Part 1 complete!</div>'
+    +'<div class="win-sub">Score: <strong>'+p1State.score+' pts</strong> &nbsp;|&nbsp; '+perf+'/8 perfect</div>'
+    +'<div class="win-note">You can now read limits graphically. Ready for one-sided limits and the Squeeze Theorem?</div>'
+    +'<div class="win-btns">'
+    +'<button class="wcta" onclick="startPart(2)">Part 2 &#8594;</button>'
+    +'<button class="wcta wcta2" onclick="initP1()">Play again</button>'
+    +'<button class="wcta wcta2" onclick="goHub()">&#8592; Hub</button>'
+    +'</div></div>';
+}
+
+// ══════════════════════════════════════════════════════════════
+// PART 2 DATA & LOGIC
+// ══════════════════════════════════════════════════════════════
+var P2=[
+  {cat:'one-sided',badge:'onesided',
+   q:'Right-hand limit only: slide x toward 0 from the RIGHT. What does |x|/x approach?',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;0<sup>+</sup></span></span><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:14px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:14px;">|x|</span><span style="padding:0 3px;font-size:14px;">x</span></span>',
+   hint:'For x > 0, |x| = x, so |x|/x = x/x. What does that equal?',
+   ans:'1',choices:['-1','0','1','DNE'],
+   explain:'From the right (x > 0): |x|=x, so |x|/x = 1. The right-hand limit is 1.',
+   mode:'single',side:'R',fn:function(x){return x>0?1:x<0?-1:null;},cx:0,range:[-2.5,2.5],hasJump:true,leftVal:-1,rightVal:1},
+  {cat:'one-sided',badge:'onesided',
+   q:'Left-hand limit only: slide x toward 0 from the LEFT. What does |x|/x approach?',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;0<sup>&minus;</sup></span></span><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:14px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:14px;">|x|</span><span style="padding:0 3px;font-size:14px;">x</span></span>',
+   hint:'For x < 0, |x| = &minus;x, so |x|/x = &minus;x/x. What does that simplify to?',
+   ans:'-1',choices:['-1','0','1','DNE'],
+   explain:'From the left (x < 0): |x|=&minus;x, so |x|/x = &minus;1. The left-hand limit is &minus;1.',
+   mode:'single',side:'L',fn:function(x){return x>0?1:x<0?-1:null;},cx:0,range:[-2.5,2.5],hasJump:true,leftVal:-1,rightVal:1},
+  {cat:'dne',badge:'dne',
+   q:'Now both sliders. Does the two-sided limit of |x|/x exist at x = 0?',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;0</span></span><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:14px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:14px;">|x|</span><span style="padding:0 3px;font-size:14px;">x</span></span>',
+   hint:'Left-hand limit = &minus;1, right-hand limit = 1. Do they match?',
+   ans:'DNE',choices:['-1','0','1','DNE'],
+   explain:'Left = &minus;1, right = +1. They disagree &mdash; the two-sided limit Does Not Exist.',
+   mode:'dual',fn:function(x){return x>0?1:x<0?-1:null;},cx:0,range:[-2.5,2.5],hasJump:true,leftVal:-1,rightVal:1,dneType:'jump'},
+  {cat:'one-sided',badge:'onesided',
+   q:'Right-hand limit: what does ln(x) approach as x &rarr; 0 from the right?',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;0<sup>+</sup></span></span>ln(x)',
+   hint:'ln(0.1) &asymp; &minus;2.3, ln(0.01) &asymp; &minus;4.6. The trend is clear.',
+   ans:'-&#8734;',choices:['0','1','-&#8734;','DNE'],
+   explain:'As x&rarr;0&sup1;, ln(x) plunges to &minus;&infin;. Watch the curve drop sharply.',
+   mode:'single',side:'R',fn:function(x){return x>0.001?Math.log(x):null;},cx:0,range:[0.005,3],infApproach:true},
+  {cat:'squeeze',badge:'squeeze',
+   q:'Squeeze Theorem: f is trapped between &minus;x&sup2; and x&sup2;, both &rarr; 0. What is the limit as x&rarr;0?',
+   mathHTML:'&minus;x<sup>2</sup> &le; f(x) &le; x<sup>2</sup><br><span style="font-size:13px;">both bounds &rarr; 0 as x &rarr; 0</span>',
+   hint:'f is squeezed between two functions that both go to 0. Where must f go?',
+   ans:'0',choices:['-1','0','1','DNE'],
+   explain:'By the Squeeze Theorem, since f is trapped between &minus;x&sup2; and x&sup2;, and both &rarr; 0, so does f.',
+   mode:'squeeze',fnG:function(x){return-x*x;},fnF:function(x){return x*x*Math.sin(1/(x||0.0001));},fnH:function(x){return x*x;},cx:0,range:[-1.4,1.4]},
+  {cat:'squeeze',badge:'squeeze',
+   q:'Classic squeeze: what is lim x&sup2;&middot;sin(1/x) as x&rarr;0?',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;0</span></span>x<sup>2</sup>&middot;sin(<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">1</span><span style="padding:0 3px;font-size:12px;">x</span></span>)',
+   hint:'&minus;1 &le; sin(1/x) &le; 1. Multiply by x&sup2;: &minus;x&sup2; &le; x&sup2;sin(1/x) &le; x&sup2;.',
+   ans:'0',choices:['-1','0','1','DNE'],
+   explain:'sin(1/x) oscillates wildly but x&sup2; crushes it to 0. All three curves converge at the origin.',
+   mode:'squeeze',fnG:function(x){return-x*x;},fnF:function(x){return Math.abs(x)<0.001?0:x*x*Math.sin(1/x);},fnH:function(x){return x*x;},cx:0,range:[-1.2,1.2]},
+  {cat:'dne',badge:'dne',
+   q:'Does lim sin(1/x) exist as x &rarr; 0? Slide both sides in and watch carefully.',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;0</span></span>sin(1/x)',
+   hint:'As x&rarr;0, 1/x&rarr;&infin;. Does sin of something growing to &infin; ever settle?',
+   ans:'DNE',choices:['-1','0','1','DNE'],
+   explain:'sin(1/x) oscillates infinitely fast near x=0. It never settles &mdash; limit Does Not Exist.',
+   mode:'dual',fn:function(x){return Math.abs(x)<0.004?null:Math.sin(1/x);},cx:0,range:[-0.5,0.5],dneType:'oscillation'},
+  {cat:'one-sided',badge:'onesided',
+   q:'Left-hand limit of the floor function &lfloor;x&rfloor; as x&rarr;2.',
+   mathHTML:'<span class="lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;2<sup>&minus;</sup></span></span>&lfloor;x&rfloor;',
+   hint:'Just below x=2 (like x=1.99, x=1.999), what is the greatest integer &le; x?',
+   ans:'1',choices:['0','1','2','DNE'],
+   explain:'&lfloor;1.99&rfloor;=1, &lfloor;1.999&rfloor;=1. Left-hand limit = 1, even though &lfloor;2&rfloor;=2.',
+   mode:'single',side:'L',fn:function(x){return Math.floor(x);},cx:2,range:[0.2,3.5],hasFloor:true}
+];
+
+var p2State={queue:[],score:0,hist:[],wrong:false,cur:null};
+
+function initP2(){
+  p2State={queue:P2.slice(),score:0,hist:[],wrong:false,cur:null};
+  renderP2();
+}
+
+function renderP2(){
+  var s=p2State;
+  if(!s.queue.length){p2Win();return;}
+  s.cur=s.queue[0];s.wrong=false;
+  document.getElementById('p2pf').style.width=(((8-s.queue.length)/8)*100)+'%';
+  renderDots('p2dots',s.hist,8);
+  var p=s.cur;
+  var catLabel=p.cat==='one-sided'?'Category: One-sided limits':p.cat==='dne'?'Category: Limit Does Not Exist (DNE)':'Category: Squeeze Theorem';
+  var badgeCls=p.cat==='dne'?'b-dne':p.cat==='squeeze'?'b-squeeze':'b-onesided';
+  var ch=p.choices.map(function(c){return'<button class="choice-btn" data-val="'+c+'">'+c+'</button>';}).join('');
+  var explorerHTML=buildP2Explorer(p);
+  document.getElementById('p2area').innerHTML='<div class="card">'
+    +'<div class="cat-tag">'+catLabel+'</div>'
+    +'<span class="diff-badge '+badgeCls+'">'+p.badge+'</span>'
+    +'<div class="q-text">'+p.q+'</div>'
+    +'<div class="math-disp">'+p.mathHTML+'</div>'
+    +'<div class="hint-text">Hint: '+p.hint+'</div>'
+    +explorerHTML
+    +'<div class="choices-grid">'+ch+'</div>'
+    +'<div class="fb-box" id="p2fb"></div>'
+    +'<button class="nxt-btn" id="p2nxt" style="background:var(--teal);color:#0f0f13;" onclick="p2Next()">Next &#8594;</button>'
+    +'</div>';
+  document.querySelectorAll('#p2area .choice-btn').forEach(function(b){
+    b.addEventListener('click',function(){p2Answer(b);});
+  });
+  setTimeout(function(){setupP2Sliders(p);},50);
+}
+
+function buildP2Explorer(p){
+  if(p.mode==='squeeze'){
+    var sMin=+(p.cx+0.05).toFixed(2),sMax=+(p.range[1]-0.05).toFixed(2);
+    var sInit=+(sMin+(sMax-sMin)*0.6).toFixed(2);
+    return'<div class="explorer">'
+      +'<div class="exp-title">Slide x toward 0 &mdash; watch all three curves converge</div>'
+      +'<div class="readouts r3">'
+      +'<div class="rc cl"><div class="rc-label">g(x) lower</div><div class="rc-val" id="p2gv">&#8212;</div></div>'
+      +'<div class="rc cm"><div class="rc-label">f(x) squeezed</div><div class="rc-val" id="p2fv">&#8212;</div></div>'
+      +'<div class="rc cr"><div class="rc-label">h(x) upper</div><div class="rc-val" id="p2hv">&#8212;</div></div>'
+      +'</div>'
+      +'<div id="p2badge" class="agree"></div>'
+      +'<div class="graph-wrap"><canvas id="p2gc" role="img" aria-label="Squeeze theorem graph">Graph.</canvas></div>'
+      +'<div class="sliders"><div class="sl-row"><span class="sl-lbl sls">x &rarr; 0</span>'
+      +'<input type="range" id="p2slSq" min="'+sMin+'" max="'+sMax+'" step="0.01" value="'+sInit+'">'
+      +'<span class="sl-x" id="p2xSq">&#8212;</span><span class="sl-y ys" id="p2ySq">&#8212;</span>'
+      +'</div></div></div>';
+  }
+  var cx=p.cx!==null?p.cx:0,xMin=p.range[0],xMax=p.range[1],gap=xMax-xMin;
+  var isL=p.side==='L';
+  if(p.mode==='single'){
+    var sMin2=isL?+(xMin+0.02).toFixed(2):+(cx+0.02).toFixed(2);
+    var sMax2=isL?+(cx-0.05).toFixed(2):+(xMax-0.02).toFixed(2);
+    var sInit2=isL?Math.max(sMin2,Math.min(sMax2,+(cx-gap*0.35).toFixed(2))):Math.max(sMin2,Math.min(sMax2,+(cx+gap*0.15).toFixed(2)));
+    var cardCls=isL?'cl':'cr',subCol=isL?'#185FA5':'#0F6E56',sup2=isL?'<sup>&minus;</sup>':'<sup>+</sup>';
+    var lbl=isL?'Left-hand limit':'Right-hand limit';
+    var approaching=p.infApproach?'Slide x toward 0 &mdash; watch f(x) plunge':('Slide toward x='+fmtN(cx,0)+(isL?'&sup1;':'&#8314;')+' only');
+    return'<div class="explorer">'
+      +'<div class="exp-title">'+approaching+'</div>'
+      +'<div class="readouts r2">'
+      +'<div class="rc '+cardCls+'"><div class="rc-label">'+lbl+'</div><div class="rc-val" id="p2sv">&#8212;</div></div>'
+      +'<div class="rc cm"><div class="rc-label">Approaches</div><div class="rc-val" id="p2limv">&#8212;</div></div>'
+      +'</div>'
+      +'<div id="p2badge" class="agree"></div>'
+      +'<div class="graph-wrap"><canvas id="p2gc" role="img" aria-label="One-sided limit graph">Graph.</canvas></div>'
+      +'<div class="sliders"><div class="sl-row"><span class="sl-lbl '+(isL?'sll':'slr')+'">x'+sup2+' '+(isL?'(left)':'(right)')+'</span>'
+      +'<input type="range" id="p2slS" min="'+sMin2+'" max="'+sMax2+'" step="0.01" value="'+sInit2.toFixed(2)+'">'
+      +'<span class="sl-x" id="p2xS">&#8212;</span><span class="sl-y '+(isL?'yl':'yr')+'" id="p2yS">&#8212;</span>'
+      +'</div></div></div>';
+  }
+  var Lmin=+(xMin+0.02).toFixed(2),Lmax=+(cx-0.05).toFixed(2);
+  var Rmin=+(cx+0.05).toFixed(2),Rmax=+(xMax-0.02).toFixed(2);
+  var Li=Math.max(Lmin,Math.min(Lmax,+(cx-gap*0.3).toFixed(2)));
+  var Ri=Math.max(Rmin,Math.min(Rmax,+(cx+gap*0.3).toFixed(2)));
+  var limCls=p.dneType?'cd':'cm';
+  return'<div class="explorer">'
+    +'<div class="exp-title">'+(p.dneType==='oscillation'?'Watch the oscillation &mdash; does it settle?':'Drag each slider toward x = '+fmtN(cx,0))+'</div>'
+    +'<div class="readouts r3">'
+    +'<div class="rc cl"><div class="rc-label">Left side</div><div class="rc-val" id="p2llv">&#8212;</div></div>'
+    +'<div class="rc '+limCls+'"><div class="rc-label">Two-sided limit</div><div class="rc-val" id="p2limv">&#8212;</div></div>'
+    +'<div class="rc cr"><div class="rc-label">Right side</div><div class="rc-val" id="p2rlv">&#8212;</div></div>'
+    +'</div>'
+    +'<div id="p2badge" class="agree"></div>'
+    +'<div class="graph-wrap"><canvas id="p2gc" role="img" aria-label="Dual slider limit graph">Graph.</canvas></div>'
+    +'<div class="sliders">'
+    +'<div class="sl-row"><span class="sl-lbl sll">x&sup1; (left)</span><input type="range" id="p2slL" min="'+Lmin+'" max="'+Lmax+'" step="0.005" value="'+Li+'"><span class="sl-x" id="p2xlv">&#8212;</span><span class="sl-y yl" id="p2ylv">&#8212;</span></div>'
+    +'<div class="sl-row"><span class="sl-lbl slr">x&#8314; (right)</span><input type="range" id="p2slR" min="'+Rmin+'" max="'+Rmax+'" step="0.005" value="'+Ri+'"><span class="sl-x" id="p2xrv">&#8212;</span><span class="sl-y yr" id="p2yrv">&#8212;</span></div>'
+    +'</div></div>';
+}
+
+function setupP2Sliders(p){
+  var ch=drawChart('p2gc',p,p.mode==='squeeze'?'squeeze':undefined);
+  var cx=p.cx!==null?p.cx:0;
+  if(p.mode==='squeeze'){
+    var sl=document.getElementById('p2slSq');
+    if(!sl)return;
+    function updSq(){
+      var x=parseFloat(sl.value);
+      var gv=sfn(p.fnG,x),fv=sfn(p.fnF,x),hv=sfn(p.fnH,x);
+      document.getElementById('p2xSq').textContent=x.toFixed(3);
+      document.getElementById('p2gv').innerHTML=fmtN(gv);
+      document.getElementById('p2fv').innerHTML=fmtN(fv);
+      document.getElementById('p2hv').innerHTML=fmtN(hv);
+      var b=document.getElementById('p2badge');
+      var allTiny=gv!==null&&hv!==null&&Math.abs(gv)<0.07&&Math.abs(hv)<0.07;
+      b.style.display='block';b.className=allTiny?'agree ag-y':'agree ag-i';
+      b.innerHTML=allTiny?'All three converge to 0 &mdash; squeeze works!':'Slide x toward 0 &mdash; watch f get trapped';
+      if(ch){var ds=ch.data.datasets;if(ds[3])ds[3].data=gv!==null?[{x:x,y:gv}]:[];if(ds[4])ds[4].data=fv!==null?[{x:x,y:fv}]:[];if(ds[5])ds[5].data=hv!==null?[{x:x,y:hv}]:[];ch.update('none');}
+    }
+    sl.addEventListener('input',updSq);updSq();
+  } else if(p.mode==='single'){
+    var slS=document.getElementById('p2slS');
+    if(!slS)return;
+    var isL=p.side==='L';
+    function updS(){
+      var x=parseFloat(slS.value),y=sfn(p.fn,x);
+      document.getElementById('p2xS').textContent=x.toFixed(3);
+      var ys=y===null?(p.infApproach?'&minus;&#8734;':'&#8734;'):fmtN(y);
+      document.getElementById('p2yS').innerHTML='y='+ys;
+      document.getElementById('p2sv').innerHTML=ys;
+      var b=document.getElementById('p2badge'),lv=document.getElementById('p2limv');
+      var close=Math.abs(x-cx)<0.15;
+      if(p.infApproach){lv.innerHTML='&minus;&#8734;';b.style.display='block';b.className=y!==null&&y<-2?'agree ag-n':'agree ag-i';b.innerHTML=y!==null&&y<-2?'f(x) is plunging toward &minus;&#8734;!':'Slide x closer to 0';}
+      else{lv.innerHTML=y!==null?fmtN(y):'&#8734;';b.style.display='block';b.className=close?'agree ag-y':'agree ag-i';b.innerHTML=close?(isL?'Left':'Right')+'-hand limit &asymp; '+fmtN(y):'Slide toward x='+fmtN(cx,0)+(isL?'&sup1;':'&#8314;');}
+      if(ch){
+        var ds=ch.data.datasets;
+        var yBot=ch.scales.y?ch.scales.y.min:-8;
+        var off=p.hasJump?4:(p.hasFloor?ds.length-2:1);
+        if(isL){if(ds[off])ds[off].data=y!==null?[{x:x,y:y}]:[];if(ds[off+1])ds[off+1].data=y!==null?[{x:x,y:yBot},{x:x,y:y}]:[];}
+        else{if(ds[off+1]||ds[off]){}
+          var rightOff=p.hasJump?5:2;
+          if(ds[rightOff])ds[rightOff].data=y!==null?[{x:x,y:y}]:[];
+          if(ds[rightOff+1]||ds[rightOff+2]){var vl=p.hasJump?ds[7]:ds[rightOff+1];if(vl)vl.data=y!==null?[{x:x,y:yBot},{x:x,y:y}]:[];}
+        }
+        ch.update('none');
+      }
+    }
+    slS.addEventListener('input',updS);updS();
+  } else {
+    var slL=document.getElementById('p2slL'),slR=document.getElementById('p2slR');
+    if(!slL||!slR)return;
+    function updD(){
+      var xL=parseFloat(slL.value),xR=parseFloat(slR.value);
+      var yL=sfn(p.fn,xL),yR=sfn(p.fn,xR);
+      document.getElementById('p2xlv').textContent=xL.toFixed(3);
+      document.getElementById('p2xrv').textContent=xR.toFixed(3);
+      document.getElementById('p2ylv').textContent='y='+fmtN(yL);
+      document.getElementById('p2yrv').textContent='y='+fmtN(yR);
+      document.getElementById('p2llv').innerHTML=fmtN(yL);
+      document.getElementById('p2rlv').innerHTML=fmtN(yR);
+      var b=document.getElementById('p2badge'),lv=document.getElementById('p2limv');
+      var cL=Math.abs(xL-cx)<0.15,cR=Math.abs(xR-cx)<0.15;
+      if(p.dneType==='oscillation'){lv.textContent='DNE';b.style.display='block';b.className='agree ag-n';b.innerHTML='Oscillates forever &mdash; no limit exists';}
+      else if(p.dneType==='jump'){
+        if(cL&&cR&&yL!==null&&yR!==null){lv.textContent='DNE';b.style.display='block';b.className='agree ag-n';b.innerHTML='Left ('+fmtN(yL)+') &ne; Right ('+fmtN(yR)+') &mdash; Does Not Exist!';}
+        else{lv.textContent='?';b.style.display='block';b.className='agree ag-i';b.innerHTML='Slide both sides close to x='+fmtN(cx,0)+' to compare';}
+      }
+      if(ch){
+        var ds=ch.data.datasets;
+        var yBot=ch.scales.y?ch.scales.y.min:-5;
+        var off=p.hasJump?4:2;
+        if(ds[off])ds[off].data=yL!==null?[{x:xL,y:yL}]:[];
+        if(ds[off+1])ds[off+1].data=yR!==null?[{x:xR,y:yR}]:[];
+        if(ds[off+2])ds[off+2].data=yL!==null?[{x:xL,y:yBot},{x:xL,y:yL}]:[];
+        if(ds[off+3])ds[off+3].data=yR!==null?[{x:xR,y:yBot},{x:xR,y:yR}]:[];
+        ch.update('none');
+      }
+    }
+    slL.addEventListener('input',updD);slR.addEventListener('input',updD);updD();
+  }
+}
+
+function p2Answer(btn){
+  var chosen=String(btn.dataset.val),correct=String(p2State.cur.ans);
+  document.querySelectorAll('#p2area .choice-btn').forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('p2fb'),nb=document.getElementById('p2nxt');
+  if(chosen===correct){
+    btn.classList.add('correct');
+    var pts=p2State.wrong?5:10;p2State.score+=pts;
+    document.getElementById('p2score').textContent=p2State.score+' pts';
+    p2State.hist.push('ok');renderDots('p2dots',p2State.hist,8);
+    fb.className='fb-box show fb-ok';
+    fb.innerHTML='<strong>Correct!</strong> '+p2State.cur.explain+'<br><em style="opacity:.7;font-size:11px">+'+pts+' pts'+(p2State.wrong?' (partial)':'')+'</em>';
+    nb.classList.add('vis');
+  } else {
+    btn.classList.add('wrong');p2State.wrong=true;
+    p2State.hist.push('bad');renderDots('p2dots',p2State.hist,8);
+    fb.className='fb-box show fb-no';
+    fb.innerHTML='<strong>Not quite.</strong> '+p2State.cur.hint;
+    nb.classList.add('vis');
+  }
+}
+function p2Next(){p2State.queue.shift();renderP2();}
+function p2Win(){
+  document.getElementById('p2pf').style.width='100%';
+  var perf=p2State.hist.filter(function(h){return h==='ok';}).length;
+  document.getElementById('p2area').innerHTML='<div class="win-screen">'
+    +'<div class="win-emoji">&#127881;</div>'
+    +'<div class="win-title">Part 2 complete!</div>'
+    +'<div class="win-sub">Score: <strong>'+p2State.score+' pts</strong> &nbsp;|&nbsp; '+perf+'/8 perfect</div>'
+    +'<div class="win-note">So, now that you have seen how limits work graphically &mdash; how about learning to <strong>evaluate limits arithmetically?</strong></div>'
+    +'<div class="win-btns">'
+    +'<button class="wcta" onclick="startPart(3)">Part 3 &#8594;</button>'
+    +'<button class="wcta wcta2" onclick="initP2()">Play again</button>'
+    +'<button class="wcta wcta2" onclick="goHub()">&#8592; Hub</button>'
+    +'</div></div>';
+}
+
+// ══════════════════════════════════════════════════════════════
+// PART 3 DATA & LOGIC
+// ══════════════════════════════════════════════════════════════
+function LP3(expr,arrow){
+  return '<span class="p3-lim-unit"><span class="lw">lim</span><span class="ls">x&nbsp;&#8594;&nbsp;'+arrow+'</span></span>'+expr;
+}
+
+var P3=[
+{id:1,m:'Direct substitution',mc:'ms',
+ q:'Evaluate by substituting x = 3 directly into the expression.',
+ mh:LP3('&nbsp;(2x&nbsp;+&nbsp;1)','3'),
+ st:'When a function is continuous at the target point, plug in x = a directly.',
+ steps:[
+  {t:['2(',{b:'b0'},')&nbsp;+&nbsp;1'],bl:{b0:{a:'3',h:'Replace x with 3'}},n:'substitute &amp; evaluate'},
+  {t:['',{b:'b1'},'&nbsp;+&nbsp;1'],bl:{b1:{a:'6',h:'2 &times; 3 = 6'}},n:'multiply out'},
+  {t:['= ',{b:'b2'},''],bl:{b2:{a:'7',h:'6 + 1 = 7'}},n:'final answer'}
+ ],
+ tiles:[{v:'3',h:'3'},{v:'6',h:'6'},{v:'7',h:'7'},{v:'9',h:'9'},{v:'2',h:'2'},{v:'5',h:'5'}],ans:'7'},
+{id:2,m:'Direct substitution',mc:'ms',
+ q:'Substitute x = &minus;2 into the polynomial.',
+ mh:LP3('&nbsp;(x<sup>2</sup>&nbsp;&minus;&nbsp;3x&nbsp;+&nbsp;4)','&minus;2'),
+ st:'Polynomials are continuous everywhere &mdash; always try substitution first.',
+ steps:[
+  {t:['',{b:'b0',exp:'2',paren:true},'&nbsp;&minus;&nbsp;3(',{b:'b1'},')&nbsp;+&nbsp;4'],bl:{b0:{a:'-2',h:'Put &minus;2 in for x'},b1:{a:'-2',h:'Put &minus;2 in for x'}},n:'substitute &amp; evaluate'},
+  {t:['4&nbsp;&minus;&nbsp;(',{b:'b2'},')&nbsp;+&nbsp;4'],bl:{b2:{a:'-6',h:'3 &times; (&minus;2) = &minus;6'}},n:'simplify each term'},
+  {t:['= ',{b:'b3'},''],bl:{b3:{a:'14',h:'4 + 6 + 4 = 14'}},n:'final answer'}
+ ],
+ tiles:[{v:'-2',h:'&minus;2'},{v:'-6',h:'&minus;6'},{v:'4',h:'4'},{v:'6',h:'6'},{v:'14',h:'14'},{v:'12',h:'12'}],ans:'14'},
+{id:3,m:'Factoring',mc:'mf',
+ q:'Direct substitution gives 0/0. Factor and cancel.',
+ mh:LP3('&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:15px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:15px;">x<sup>2</sup> &minus; 4</span><span style="padding:0 3px;font-size:15px;">x &minus; 2</span></span>','2'),
+ st:'When you get 0/0, factor the numerator, cancel common factors, then substitute.',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(x&minus;2)(',{b:'b0'},')</span><span style="padding:2px 5px;">(x&minus;2)</span></span>'],bl:{b0:{a:'x+2',h:'x<sup>2</sup>&minus;4 = (x&minus;2)(x+2)'}},n:'factor the numerator'},
+  {t:['',{b:'b1'},''],bl:{b1:{a:'x+2',h:'Cancel (x&minus;2) top and bottom'}},n:'cancel common factor'},
+  {t:['(',{b:'b2'},')&nbsp;+&nbsp;2&nbsp;= ',{b:'b3'},''],bl:{b2:{a:'2',h:'Substitute x = 2 into x+2'},b3:{a:'4',h:'2 + 2 = 4'}},n:'substitute &amp; evaluate'}
+ ],
+ tiles:[{v:'x+2',h:'x+2'},{v:'x-2',h:'x&minus;2'},{v:'x+4',h:'x+4'},{v:'2',h:'2'},{v:'4',h:'4'},{v:'6',h:'6'}],ans:'4'},
+{id:4,m:'Factoring',mc:'mf',
+ q:'Both factors of the numerator are blank &mdash; find them, cancel, then evaluate.',
+ mh:LP3('&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:15px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:15px;">x<sup>2</sup> &minus; 9</span><span style="padding:0 3px;font-size:15px;">x &minus; 3</span></span>','3'),
+ st:'x&sup2;&minus;9 is a difference of squares. Factor it fully as (?)(?) then cancel (x&minus;3).',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(',{b:'b0'},')',{b:'b1'},')</span><span style="padding:2px 5px;">(x&minus;3)</span></span>'],bl:{b0:{a:'x-3',h:'Factors are (x&minus;3) and (x+3) &mdash; either order works'},b1:{a:'x+3',h:'Factors are (x&minus;3) and (x+3) &mdash; either order works'}},commute:[['b0','b1']],n:'factor numerator completely'},
+  {t:['',{b:'b2'},''],bl:{b2:{a:'x+3',h:'Cancel common factor, leaving (x+3)'}},n:'cancel common factor'},
+  {t:['(',{b:'b3'},')&nbsp;+&nbsp;3&nbsp;= ',{b:'b4'},''],bl:{b3:{a:'3',h:'Substitute x = 3'},b4:{a:'6',h:'3 + 3 = 6'}},n:'substitute &amp; evaluate'}
+ ],
+ tiles:[{v:'x-3',h:'x&minus;3'},{v:'x+3',h:'x+3'},{v:'x-9',h:'x&minus;9'},{v:'3',h:'3'},{v:'6',h:'6'},{v:'9',h:'9'}],ans:'6'},
+{id:5,m:'Factoring',mc:'mf',
+ q:'Factor the trinomial completely &mdash; both factors are blank &mdash; then cancel and evaluate.',
+ mh:LP3('&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:15px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:15px;">x<sup>2</sup> + x &minus; 6</span><span style="padding:0 3px;font-size:15px;">x &minus; 2</span></span>','2'),
+ st:'Find two numbers that multiply to &minus;6 and add to +1. Both factors are yours to find.',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(',{b:'b0'},')',{b:'b1'},')</span><span style="padding:2px 5px;">(x&minus;2)</span></span>'],bl:{b0:{a:'x-2',h:'Factors are (x&minus;2) and (x+3) &mdash; either order works'},b1:{a:'x+3',h:'Factors are (x&minus;2) and (x+3) &mdash; either order works'}},commute:[['b0','b1']],n:'factor trinomial completely'},
+  {t:['',{b:'b2'},''],bl:{b2:{a:'x+3',h:'Cancel common factor, leaving (x+3)'}},n:'cancel common factor'},
+  {t:['2&nbsp;+&nbsp;',{b:'b3'},'&nbsp;= ',{b:'b4'},''],bl:{b3:{a:'3',h:'Substitute x=2: the constant part of x+3'},b4:{a:'5',h:'2 + 3 = 5'}},n:'substitute &amp; evaluate'}
+ ],
+ tiles:[{v:'x-2',h:'x&minus;2'},{v:'x+3',h:'x+3'},{v:'x-3',h:'x&minus;3'},{v:'x+2',h:'x+2'},{v:'3',h:'3'},{v:'5',h:'5'}],ans:'5'},
+{id:6,m:'Factoring',mc:'mf',
+ q:'Factor both numerator and denominator &mdash; all factor blanks are open.',
+ mh:LP3('&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:15px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:15px;">x<sup>2</sup> &minus; 1</span><span style="padding:0 3px;font-size:15px;">x<sup>2</sup> &minus; x</span></span>','1'),
+ st:'Top: x&sup2;&minus;1 = (x&minus;1)(x+1). Bottom: x&sup2;&minus;x = x(x&minus;1). Cancel the shared factor.',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(',{b:'b0'},')',{b:'b1'},')</span><span style="display:inline-flex;align-items:center;padding:2px 5px;">x(',{b:'b2'},')</span></span>'],bl:{b0:{a:'x-1',h:'Numerator factors are (x&minus;1) and (x+1) &mdash; either order works'},b1:{a:'x+1',h:'Numerator factors are (x&minus;1) and (x+1) &mdash; either order works'},b2:{a:'x-1',h:'Denominator shared factor is (x&minus;1)'}},commute:[['b0','b1']],n:'factor numerator &amp; denominator'},
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="border-bottom:1.5px solid currentColor;padding:2px 5px;">(',{b:'b3'},')</span><span style="padding:2px 5px;">x</span></span>'],bl:{b3:{a:'x+1',h:'Cancel (x&minus;1) from top and bottom'}},n:'cancel common factor'},
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="border-bottom:1.5px solid currentColor;padding:2px 5px;">(1+1)</span><span style="padding:2px 5px;">',{b:'b4'},'</span></span>&nbsp;= ',{b:'b5'},''],bl:{b4:{a:'1',h:'Substitute x=1 into denominator'},b5:{a:'2',h:'2/1 = 2'}},n:'substitute &amp; evaluate'}
+ ],
+ tiles:[{v:'x-1',h:'x&minus;1'},{v:'x+1',h:'x+1'},{v:'x',h:'x'},{v:'1',h:'1'},{v:'2',h:'2'},{v:'0',h:'0'}],ans:'2'},
+{id:7,m:'Rationalisation',mc:'mc',
+ q:'Multiply top and bottom by the conjugate to eliminate the square root.',
+ mh:LP3('&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:15px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:15px;">&radic;x &minus; 2</span><span style="padding:0 3px;font-size:15px;">x &minus; 4</span></span>','4'),
+ st:'When a square root causes 0/0, multiply by the conjugate (&radic;x+2).',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(&radic;x&minus;2)(',{b:'b0'},')</span><span style="padding:2px 5px;">(x&minus;4)(&radic;x+2)</span></span>'],bl:{b0:{a:'Rx+2',h:'Conjugate of (&radic;x&minus;2) is (&radic;x+2)'}},n:'multiply by conjugate'},
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="border-bottom:1.5px solid currentColor;padding:2px 5px;">(',{b:'b1'},')</span><span style="padding:2px 5px;">(x&minus;4)(&radic;x+2)</span></span>'],bl:{b1:{a:'x-4',h:'(&radic;x&minus;2)(&radic;x+2) = x&minus;4'}},n:'expand numerator'},
+  {t:['1/(&radic;4+2)&nbsp;= 1/',{b:'b2'},''],bl:{b2:{a:'4',h:'Cancel (x&minus;4), sub x=4: &radic;4+2=4'}},n:'cancel &amp; evaluate'}
+ ],
+ tiles:[{v:'Rx+2',h:'&radic;x+2'},{v:'Rx-2',h:'&radic;x&minus;2'},{v:'x-4',h:'x&minus;4'},{v:'x+4',h:'x+4'},{v:'4',h:'4'},{v:'2',h:'2'}],ans:'1/4'},
+{id:8,m:'Rationalisation',mc:'mc',
+ q:'Rationalise the numerator &mdash; multiply by the conjugate to remove the root.',
+ mh:LP3('&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:15px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:15px;">&radic;(x+5) &minus; 3</span><span style="padding:0 3px;font-size:15px;">x &minus; 4</span></span>','4'),
+ st:'Conjugate of (&radic;(x+5)&minus;3) is (&radic;(x+5)+3). Product gives (x+5)&minus;9=x&minus;4.',
+ steps:[
+  {t:['((x+5)&minus;9)/((x&minus;4)(',{b:'b0'},'))'],bl:{b0:{a:'Rx5+3',h:'Multiply by conjugate &radic;(x+5)+3'}},n:'multiply by conjugate'},
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="border-bottom:1.5px solid currentColor;padding:2px 5px;">(',{b:'b1'},')</span><span style="padding:2px 5px;">(x&minus;4)(&radic;(x+5)+3)</span></span>'],bl:{b1:{a:'x-4',h:'(x+5)&minus;9 simplifies to x&minus;4'}},n:'simplify numerator'},
+  {t:['1/(&radic;9+3)&nbsp;= 1/',{b:'b2'},''],bl:{b2:{a:'6',h:'Cancel (x&minus;4), sub x=4: &radic;9+3=6'}},n:'cancel &amp; evaluate'}
+ ],
+ tiles:[{v:'Rx5+3',h:'&radic;(x+5)+3'},{v:'Rx5-3',h:'&radic;(x+5)&minus;3'},{v:'x-4',h:'x&minus;4'},{v:'x+4',h:'x+4'},{v:'6',h:'6'},{v:'3',h:'3'}],ans:'1/6'},
+{id:9,m:'Limit laws',mc:'ml',
+ q:'Apply the sum law: split the limit of a sum into a sum of limits.',
+ mh:LP3('&nbsp;(x<sup>2</sup>&nbsp;+&nbsp;5x)','3'),
+ st:'lim[f(x)+g(x)] = lim f(x) + lim g(x). Evaluate each part separately.',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin-right:3px;line-height:1.1;"><span style="font-size:13px;font-weight:700;font-family:Space Mono,monospace;">lim</span><span style="font-size:10px;color:#CECBF6;">x&#8594;3</span></span>x<sup>2</sup>&nbsp;+&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin-right:3px;line-height:1.1;"><span style="font-size:13px;font-weight:700;font-family:Space Mono,monospace;">lim</span><span style="font-size:10px;color:#CECBF6;">x&#8594;3</span></span>',{b:'b0'},''],bl:{b0:{a:'5x',h:'Split: lim(x<sup>2</sup>+5x)=lim(x<sup>2</sup>)+lim(5x)'}},n:'split by sum law'},
+  {t:['(',{b:'b1'},')<sup>2</sup>&nbsp;+&nbsp;5(',{b:'b2'},')'],bl:{b1:{a:'3',h:'Sub x=3 into x<sup>2</sup>'},b2:{a:'3',h:'Sub x=3 into 5x'}},n:'substitute &amp; evaluate'},
+  {t:['9&nbsp;+&nbsp;',{b:'b3'},'&nbsp;= ',{b:'b4'},''],bl:{b3:{a:'15',h:'5&times;3=15'},b4:{a:'24',h:'9+15=24'}},n:'final answer'}
+ ],
+ tiles:[{v:'5x',h:'5x'},{v:'3x',h:'3x'},{v:'3',h:'3'},{v:'9',h:'9'},{v:'15',h:'15'},{v:'24',h:'24'}],ans:'24'},
+{id:10,m:'Limit laws',mc:'ml',
+ q:'Use the product law: limit of a product equals product of the limits.',
+ mh:LP3('&nbsp;(x+1)(x&nbsp;&minus;&nbsp;3)','5'),
+ st:'lim[f(x)&middot;g(x)] = lim f(x) &middot; lim g(x). Find each factor\'s limit separately.',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin-right:3px;line-height:1.1;"><span style="font-size:13px;font-weight:700;font-family:Space Mono,monospace;">lim</span><span style="font-size:10px;color:#CECBF6;">x&#8594;5</span></span>(x+1)&middot;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin-right:3px;line-height:1.1;"><span style="font-size:13px;font-weight:700;font-family:Space Mono,monospace;">lim</span><span style="font-size:10px;color:#CECBF6;">x&#8594;5</span></span>(',{b:'b0'},')'],bl:{b0:{a:'x-3',h:'Split: lim(x+1)&middot;lim(x&minus;3)'}},n:'split by product law'},
+  {t:['(5+1)&middot;(5',{b:'b1'},'3)'],bl:{b1:{a:'-',h:'Sub x=5: get (6)&middot;(5&minus;3)'}},n:'substitute &amp; evaluate'},
+  {t:['6&middot;',{b:'b2'},'&nbsp;= ',{b:'b3'},''],bl:{b2:{a:'2',h:'5&minus;3=2'},b3:{a:'12',h:'6&times;2=12'}},n:'final answer'}
+ ],
+ tiles:[{v:'x-3',h:'x&minus;3'},{v:'x+3',h:'x+3'},{v:'-',h:'&minus;'},{v:'+',h:'+'},{v:'2',h:'2'},{v:'12',h:'12'}],ans:'12'},
+{id:11,m:'Infinity rule',mc:'mi',
+ q:'Divide every term by the highest power of x to find the limit at infinity.',
+ mh:LP3('&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:15px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:15px;">3x<sup>2</sup> + 1</span><span style="padding:0 3px;font-size:15px;">x<sup>2</sup> + 2</span></span>','&infin;'),
+ st:'Divide top and bottom by x<sup>2</sup>. Terms with x in denominator vanish as x&rarr;&infin;.',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(3+',{b:'b0'},')</span><span style="display:inline-flex;align-items:center;padding:2px 5px;">(1+',{b:'b1'},')</span></span>'],bl:{b0:{a:'1x2',h:'Divide +1 by x<sup>2</sup>: get <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">1</span><span style="padding:0 3px;font-size:12px;">x<sup>2</sup></span></span>'},b1:{a:'2x2',h:'Divide +2 by x<sup>2</sup>: get <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">2</span><span style="padding:0 3px;font-size:12px;">x<sup>2</sup></span></span>'}},n:'divide by x<sup>2</sup>'},
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(3+',{b:'b2'},')</span><span style="display:inline-flex;align-items:center;padding:2px 5px;">(1+',{b:'b3'},')</span></span>'],bl:{b2:{a:'0',h:'1/x<sup>2</sup>&rarr;0 as x&rarr;&infin;'},b3:{a:'0',h:'2/x<sup>2</sup>&rarr;0 as x&rarr;&infin;'}},n:'terms vanish'},
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="border-bottom:1.5px solid currentColor;padding:2px 5px;">3</span><span style="padding:2px 5px;">',{b:'b4'},'</span></span>&nbsp;= ',{b:'b5'},''],bl:{b4:{a:'1',h:'Denominator simplifies to 1'},b5:{a:'3',h:'3/1=3'}},n:'final answer'}
+ ],
+ tiles:[{v:'1x2',h:'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">1</span><span style="padding:0 3px;font-size:12px;">x<sup>2</sup></span></span>'},{v:'2x2',h:'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">2</span><span style="padding:0 3px;font-size:12px;">x<sup>2</sup></span></span>'},{v:'3x2',h:'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">3</span><span style="padding:0 3px;font-size:12px;">x<sup>2</sup></span></span>'},{v:'0',h:'0'},{v:'1',h:'1'},{v:'3',h:'3'}],ans:'3'},
+{id:12,m:'Infinity rule',mc:'mi',
+ q:'Leading coefficients: find the limit of this rational function as x&rarr;&infin;.',
+ mh:LP3('&nbsp;<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:15px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:15px;">5x<sup>3</sup> &minus; 2x</span><span style="padding:0 3px;font-size:15px;">2x<sup>3</sup> + x<sup>2</sup></span></span>','&infin;'),
+ st:'Divide every term by x<sup>3</sup>. Lower-degree terms vanish, leaving ratio of leading coefficients.',
+ steps:[
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(5&minus;',{b:'b0'},')</span><span style="display:inline-flex;align-items:center;padding:2px 5px;">(2+',{b:'b1'},')</span></span>'],bl:{b0:{a:'2x2',h:'Divide &minus;2x by x<sup>3</sup>: get <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">2</span><span style="padding:0 3px;font-size:12px;">x<sup>2</sup></span></span>'},b1:{a:'1x',h:'Divide x<sup>2</sup> by x<sup>3</sup>: get <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">1</span><span style="padding:0 3px;font-size:12px;">x</span></span>'}},n:'divide by x<sup>3</sup>'},
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="display:inline-flex;align-items:center;border-bottom:1.5px solid currentColor;padding:2px 5px;">(5&minus;',{b:'b2'},')</span><span style="display:inline-flex;align-items:center;padding:2px 5px;">(2+',{b:'b3'},')</span></span>'],bl:{b2:{a:'0',h:'2/x<sup>2</sup>&rarr;0'},b3:{a:'0',h:'1/x&rarr;0'}},n:'terms vanish'},
+  {t:['<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.5;"><span style="border-bottom:1.5px solid currentColor;padding:2px 5px;">',{b:'b4'},'</span><span style="padding:2px 5px;">2</span></span>&nbsp;= ',{b:'b5'},''],bl:{b4:{a:'5',h:'Only leading coefficient 5 remains'},b5:{a:'5/2',h:'5&divide;2=5/2'}},n:'final answer'}
+ ],
+ tiles:[{v:'2x2',h:'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">2</span><span style="padding:0 3px;font-size:12px;">x<sup>2</sup></span></span>'},{v:'1x',h:'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">1</span><span style="padding:0 3px;font-size:12px;">x</span></span>'},{v:'1x2',h:'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">1</span><span style="padding:0 3px;font-size:12px;">x<sup>2</sup></span></span>'},{v:'0',h:'0'},{v:'5',h:'5'},{v:'5/2',h:'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:Space Mono,monospace;font-size:12px;line-height:1.2;"><span style="border-bottom:1.5px solid currentColor;padding:0 3px;font-size:12px;">5</span><span style="padding:0 3px;font-size:12px;">2</span></span>'}],ans:'5/2'}
+];
+
+var p3State={queue:[],score:0,hist:[],cur:null,DS:{},MK:{},selVal:null,dragVal:null};
+var P3T=P3.length;
+
+function initP3(){
+  p3State={queue:P3.slice(),score:0,hist:[],cur:null,DS:{},MK:{},selVal:null,dragVal:null};
+  renderP3();
+}
+
+function renderP3(){
+  var s=p3State;
+  if(!s.queue.length){p3Win();return;}
+  s.cur=s.queue[0];s.DS={};s.MK={};s.selVal=null;
+  document.getElementById('p3pf').style.width=(((P3T-s.queue.length)/P3T)*100)+'%';
+  renderDots('p3dots',s.hist,12);
+  document.getElementById('p3area').innerHTML=buildP3Card(s.cur,P3T-s.queue.length+1);
+  setTimeout(bindP3,0);
+}
+
+function buildP3Card(p,n){
+  var sh='';
+  for(var si=0;si<p.steps.length;si++){
+    var st=p.steps[si];var c='';
+    for(var ti=0;ti<st.t.length;ti++){
+      var x=st.t[ti];
+      if(typeof x==='string'){c+=x;}
+      else if(x.exp&&x.paren){
+        c+='<span style="display:inline-flex;align-items:flex-start;vertical-align:middle;">'
+          +'<span style="font-family:Space Mono,monospace;font-size:13px;">(</span>'
+          +'<span class="dz" id="dz_'+si+'_'+x.b+'" data-si="'+si+'" data-bk="'+x.b+'">?</span>'
+          +'<span style="font-family:Space Mono,monospace;font-size:13px;">)</span>'
+          +'<sup style="font-size:9px;line-height:1;margin-left:1px;">'+x.exp+'</sup></span>';
+      } else if(x.exp){
+        c+='<span style="display:inline-flex;align-items:flex-start;vertical-align:middle;">'
+          +'<span class="dz" id="dz_'+si+'_'+x.b+'" data-si="'+si+'" data-bk="'+x.b+'">?</span>'
+          +'<sup style="font-size:9px;line-height:1;margin-left:1px;">'+x.exp+'</sup></span>';
+      } else {
+        c+='<span class="dz" id="dz_'+si+'_'+x.b+'" data-si="'+si+'" data-bk="'+x.b+'">?</span>';
+      }
+    }
+    sh+='<div class="srow" id="sr_'+si+'">'
+      +'<div class="snum">step&nbsp;'+(si+1)+'</div>'
+      +'<div class="scont">'+c+'<span class="snote">'+st.n+'</span></div>'
+      +'<div class="schk" id="ck_'+si+'">&#9675;</div>'
+      +'</div>';
+  }
+  var sf=shuffleArr(p.tiles);var th='';
+  for(var i=0;i<sf.length;i++)
+    th+='<div class="tile" id="tl_'+i+'" data-val="'+sf[i].v+'">'+sf[i].h+'</div>';
+  return'<div class="card">'
+    +'<div class="pctr">Problem '+n+' of '+P3T+'</div>'
+    +'<span class="mpill '+p.mc+'">'+p.m+'</span>'
+    +'<div class="q-text">'+p.q+'</div>'
+    +'<div class="p3-mbox">'+p.mh+'</div>'
+    +'<div class="sbox">Strategy: '+p.st+'</div>'
+    +'<div class="p3-stitle">Click a tile then click a blank &mdash; or drag and drop</div>'
+    +sh
+    +'<div class="ttitle">Available tiles (reusable)</div>'
+    +'<div class="tpool">'+th+'</div>'
+    +'<div class="fb-box" id="p3fb"></div>'
+    +'<div class="mnt" id="p3mn"></div>'
+    +'<button class="nxt-btn" id="p3nxt" style="background:var(--purple);" onclick="p3Next()">Next problem &#8594;</button>'
+    +'</div>';
+}
+
+function bindP3(){
+  var s=p3State;
+  document.querySelectorAll('#p3area .tile').forEach(function(t){
+    t.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(s.selVal===t.dataset.val&&t.classList.contains('sel')){p3ClearSel();return;}
+      p3ClearSel();t.classList.add('sel');s.selVal=t.dataset.val;
+    });
+    t.setAttribute('draggable','true');
+    t.addEventListener('dragstart',function(e){
+      s.dragVal=t.dataset.val;
+      e.dataTransfer.effectAllowed='copy';
+      e.dataTransfer.setData('text/plain',t.dataset.val);
+      t.classList.add('ghost');p3ClearSel();
+    });
+    t.addEventListener('dragend',function(){t.classList.remove('ghost');});
+  });
+  document.querySelectorAll('#p3area .dz').forEach(function(dz){
+    dz.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(dz.classList.contains('filled'))return;
+      if(s.selVal!==null){p3Place(dz,s.selVal);p3ClearSel();}
+    });
+    dz.addEventListener('dragenter',function(e){e.preventDefault();if(!dz.classList.contains('filled'))dz.classList.add('over');});
+    dz.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='copy';});
+    dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
+    dz.addEventListener('drop',function(e){
+      e.preventDefault();dz.classList.remove('over');
+      if(dz.classList.contains('filled'))return;
+      var v=e.dataTransfer.getData('text/plain')||s.dragVal;
+      if(v)p3Place(dz,v);
+    });
+  });
+  document.getElementById('p3area').addEventListener('click',function(e){
+    if(!e.target.classList.contains('tile')&&!e.target.classList.contains('dz'))p3ClearSel();
+  });
+}
+
+function p3ClearSel(){
+  document.querySelectorAll('#p3area .tile').forEach(function(t){t.classList.remove('sel');});
+  p3State.selVal=null;
+}
+
+function p3TileHTML(v){
+  var p=p3State.cur;
+  for(var i=0;i<p.tiles.length;i++)if(p.tiles[i].v===v)return p.tiles[i].h;
+  return v;
+}
+
+function p3Place(dz,val){
+  var s=p3State;
+  if(dz.classList.contains('filled'))return;
+  var si=parseInt(dz.dataset.si),bk=dz.dataset.bk;
+  var step=s.cur.steps[si];
+  var ok=step.bl[bk].a;
+  var hint=step.bl[bk].h;
+
+  // Commutative check: if this step has a commutative pair group,
+  // check if val matches ANY unfilled blank in the same group
+  var accepted=false;
+  var acceptedBk=bk;
+
+  if(step.commute){
+    // Find which group this blank belongs to
+    var myGroup=null;
+    for(var gi=0;gi<step.commute.length;gi++){
+      if(step.commute[gi].indexOf(bk)>=0){myGroup=step.commute[gi];break;}
+    }
+    if(myGroup){
+      // Check if val matches any blank in the group that isn't filled yet
+      for(var bi=0;bi<myGroup.length;bi++){
+        var candidate=myGroup[bi];
+        if(!s.DS[si+'_'+candidate] && step.bl[candidate].a===val){
+          accepted=true;
+          acceptedBk=candidate;
+          // Update hint to the matched blank's hint
+          hint=step.bl[candidate].h;
+          break;
+        }
+      }
+    } else {
+      // Not in a commutative group — normal check
+      if(val===ok){accepted=true;}
+    }
+  } else {
+    if(val===ok){accepted=true;}
+  }
+
+  if(accepted){
+    // If we accepted into a different blank (commutative swap), update the dz reference
+    var targetDz=dz;
+    if(acceptedBk!==bk){
+      // Find the actual drop zone for acceptedBk
+      var altDz=document.getElementById('dz_'+si+'_'+acceptedBk);
+      if(altDz&&!altDz.classList.contains('filled')){targetDz=altDz;}
+    }
+    targetDz.innerHTML=p3TileHTML(val);targetDz.classList.add('filled');
+    s.DS[si+'_'+acceptedBk]=true;
+    var bkeys=Object.keys(step.bl),allDone=true;
+    for(var i=0;i<bkeys.length;i++)if(!s.DS[si+'_'+bkeys[i]]){allDone=false;break;}
+    if(allDone){
+      var ck=document.getElementById('ck_'+si);
+      if(ck){ck.innerHTML='&#10003;';ck.style.color='var(--green)';}
+      var row=document.getElementById('sr_'+si);if(row)row.classList.add('done');
+    }
+    p3CheckDone();
+  } else {
+    dz.classList.add('wrong');
+    var self=dz;setTimeout(function(){self.classList.remove('wrong');},400);
+    var k=si+'_'+bk;s.MK[k]=(s.MK[k]||0)+1;
+    var fb=document.getElementById('p3fb');
+    // Collect all hints from the step for a better hint message
+    var allHints=Object.keys(step.bl).map(function(b){return step.bl[b].h;}).join(' / ');
+    var hintMsg=step.commute?allHints:hint;
+    if(fb){fb.className='fb-box show fb-hint';fb.innerHTML=s.MK[k]===1?'<strong>Not quite.</strong> Think carefully about step '+(si+1)+'.':'<strong>Hint:</strong> '+hintMsg;}
+    var tot=0;Object.keys(s.MK).forEach(function(mk){tot+=s.MK[mk];});
+    var mn=document.getElementById('p3mn');if(mn)mn.textContent=tot+(tot===1?' mistake':' mistakes')+' so far';
+  }
+}
+
+function p3CheckDone(){
+  var s=p3State;
+  var needed=[];
+  s.cur.steps.forEach(function(st,si){Object.keys(st.bl).forEach(function(b){needed.push(si+'_'+b);});});
+  for(var i=0;i<needed.length;i++)if(!s.DS[needed[i]])return;
+  var tot=0;Object.keys(s.MK).forEach(function(k){tot+=s.MK[k];});
+  var pts=tot===0?15:tot<=2?10:5;
+  s.score+=pts;s.hist.push(tot===0?'ok':'bad');
+  document.getElementById('p3score').textContent=s.score+' pts';
+  renderDots('p3dots',s.hist,12);
+  var fb=document.getElementById('p3fb');
+  if(fb){
+    fb.className='fb-box show fb-ok';
+    var msg=tot===0?'Perfect &mdash; no mistakes!':tot<=2?'Well done!':'Got there!';
+    fb.innerHTML='<strong>'+msg+'</strong> The limit = <strong>'+s.cur.ans+'</strong>&nbsp; +'+pts+' pts'+(tot>0?' <em style="opacity:.7;font-size:11px">('+tot+' mistake'+(tot>1?'s':'')+')</em>':'');
+  }
+  var nb=document.getElementById('p3nxt');if(nb)nb.classList.add('vis');
+  var mn=document.getElementById('p3mn');if(mn)mn.textContent='';
+}
+
+function p3Next(){p3State.queue.shift();renderP3();}
+
+function p3Win(){
+  document.getElementById('p3pf').style.width='100%';
+  var s=p3State;
+  var perf=s.hist.filter(function(h){return h==='ok';}).length;
+  document.getElementById('p3area').innerHTML='<div class="win-screen">'
+    +'<div class="win-emoji">&#127881;</div>'
+    +'<div class="win-title">All three parts complete!</div>'
+    +'<div class="win-sub">Part 3 score: <strong>'+s.score+' pts</strong> &nbsp;|&nbsp; '+perf+'/'+P3T+' perfect</div>'
+    +'<div class="win-note">You\'ve now mastered limits graphically, conceptually, and algebraically.<br><br>Ready for <strong>derivatives</strong>? The derivative is defined as a limit &mdash; everything you just learned leads directly here.</div>'
+    +'<div class="win-btns">'
+    +'<button class="wcta" onclick="initP3()">Play again</button>'
+    +'<button class="wcta wcta2" onclick="goHub()">&#8592; Hub</button>'
+    +'</div></div>';
+}
+</script>
+</body>
+</html>
