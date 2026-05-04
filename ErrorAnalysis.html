@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathelicious &mdash; Error Analysis Quest</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0f1a;--s1:#151827;--s2:#1c1f30;--s3:#222540;
+  --bd:#2a2d45;--bd2:#4a4fcc;
+  --blue:#5B7FE8;--blue2:#8AAFF5;
+  --green:#2DBF8A;--green2:#7EECC4;
+  --red:#E85B5B;--red2:#F59898;
+  --orange:#F0853A;--orange2:#F5B07A;
+  --purple:#9B6FE8;--purple2:#C4A8F5;
+  --amber:#F5C842;
+  --text:#ECEEF8;--text2:#8B90B8;--text3:#555878;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font-size:14px;}
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* ── HUB ─────────────────────────────── */
+#hub{min-height:100vh;}
+.hub-wrap{max-width:680px;margin:0 auto;padding:clamp(2.5rem,6vw,4rem) 1.5rem 3rem;}
+.hub-back{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text2);text-decoration:none;margin-bottom:1.5rem;padding:5px 12px;background:var(--s1);border:1px solid var(--bd);border-radius:7px;transition:all .15s;}
+.hub-back:hover{color:var(--blue2);border-color:var(--bd2);}
+.hub-eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--red2);margin-bottom:.5rem;}
+.hub-title{font-size:clamp(30px,6vw,52px);font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:.75rem;}
+.hub-hl{color:var(--red);}
+.hub-sub{font-size:clamp(13px,1.5vw,15px);color:var(--text2);line-height:1.75;margin-bottom:1.5rem;max-width:520px;}
+.prereq-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem;}
+.pchip{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-size:11px;font-weight:700;}
+.chip-l{background:rgba(155,111,232,.12);border:1px solid rgba(155,111,232,.3);color:var(--purple2);}
+.chip-d{background:rgba(240,133,58,.12);border:1px solid rgba(240,133,58,.3);color:var(--orange2);}
+.start-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .2s;}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,91,91,.35);}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.9rem;margin-top:2.5rem;}
+.how-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:1rem;}
+.how-icon{font-size:22px;margin-bottom:.45rem;}
+.how-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem;}
+.how-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+
+/* ── GAME ─────────────────────────────── */
+.game-wrap{max-width:680px;margin:0 auto;padding:clamp(.6rem,2vw,1.2rem) clamp(.6rem,2vw,1rem) 2rem;min-height:100vh;}
+.gtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;flex-wrap:wrap;gap:6px;}
+.back-btn{display:flex;align-items:center;gap:5px;background:var(--s1);border:1px solid var(--bd);color:var(--text2);font-size:12px;font-weight:700;padding:5px 11px;border-radius:7px;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;}
+.back-btn:hover{border-color:var(--bd2);color:var(--blue2);}
+.gtitle{font-size:clamp(13px,2vw,17px);font-weight:900;color:var(--red2);}
+.spill{font-size:12px;font-weight:700;padding:5px 13px;border-radius:99px;font-family:'Space Mono',monospace;background:rgba(232,91,91,.15);color:var(--red2);border:1.5px solid var(--red);}
+.pbar{height:5px;border-radius:99px;background:rgba(232,91,91,.15);margin-bottom:.7rem;overflow:hidden;}
+.pfill{height:100%;border-radius:99px;background:var(--red);transition:width .5s;}
+.back-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.65rem;}
+.bnav-label{font-size:10px;color:var(--text3);font-weight:600;align-self:center;margin-right:2px;}
+.bnav-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;font-family:'Nunito',sans-serif;border:1px solid var(--bd);background:var(--s2);color:var(--text2);cursor:pointer;transition:all .15s;}
+.bnav-btn:hover{border-color:var(--bd2);color:var(--blue2);}
+.bnav-btn.ok{border-color:var(--green);color:var(--green2);background:rgba(45,191,138,.08);}
+.bnav-btn.bad{border-color:var(--red);color:var(--red2);background:rgba(232,91,91,.08);}
+
+/* ── CARD ─────────────────────────────── */
+.card{background:var(--s1);border:1.5px solid var(--bd);border-radius:15px;padding:clamp(.85rem,2.5vw,1.4rem);margin-bottom:.7rem;}
+.pctr{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:.35rem;}
+.topic-row{display:flex;align-items:center;gap:8px;margin-bottom:.55rem;}
+.tbadge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;}
+.tb-l{background:rgba(155,111,232,.15);color:var(--purple2);border:1px solid rgba(155,111,232,.3);}
+.tb-d{background:rgba(240,133,58,.15);color:var(--orange2);border:1px solid rgba(240,133,58,.3);}
+.dbadge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:99px;}
+.db-e{background:rgba(45,191,138,.12);color:var(--green2);border:1px solid rgba(45,191,138,.25);}
+.db-m{background:rgba(245,200,66,.12);color:var(--amber);border:1px solid rgba(245,200,66,.25);}
+.db-h{background:rgba(232,91,91,.12);color:var(--red2);border:1px solid rgba(232,91,91,.25);}
+
+/* scenario */
+.scene{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:.75rem 1rem;margin-bottom:.6rem;font-size:13px;color:var(--text);line-height:1.65;}
+.scene sup{font-size:10px;line-height:0;vertical-align:super;}
+.scene sub{font-size:10px;line-height:0;vertical-align:sub;}
+
+/* worked steps */
+.ws-heading{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:.4rem;}
+.instr{font-size:12px;font-weight:700;color:var(--amber);margin-bottom:.5rem;display:flex;align-items:center;gap:6px;}
+.ws-wrap{background:var(--s2);border-radius:12px;padding:.6rem .75rem;margin-bottom:.75rem;}
+.ws-step{display:flex;align-items:flex-start;gap:10px;padding:.45rem .5rem;border-radius:8px;margin-bottom:3px;border:1.5px solid transparent;transition:all .18s;}
+.ws-step.clickable{cursor:pointer;}
+.ws-step.clickable:hover{background:rgba(255,255,255,.04);border-color:var(--bd);}
+.ws-step.flash-wrong{border-color:var(--blue);background:rgba(91,127,232,.08);animation:shk .35s;}
+.ws-step.show-error{background:rgba(232,91,91,.12);border-color:var(--red);}
+.ws-step.show-ok{background:rgba(45,191,138,.07);border-color:rgba(45,191,138,.3);}
+@keyframes shk{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+.step-num{min-width:24px;height:24px;border-radius:50%;background:var(--s3);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2);margin-top:1px;transition:all .18s;}
+.ws-step.show-error .step-num{background:var(--red);color:#fff;}
+.ws-step.show-ok .step-num{background:var(--green);color:#0d0f1a;}
+.step-body{flex:1;font-family:'Space Mono',monospace;font-size:clamp(11px,1.3vw,13px);line-height:1.7;color:var(--text);}
+.step-body sup{font-size:9px;line-height:0;vertical-align:super;}
+.step-body sub{font-size:9px;line-height:0;vertical-align:sub;}
+.step-flag{font-size:12px;flex-shrink:0;margin-top:3px;opacity:0;transition:opacity .2s;}
+.ws-step.show-error .step-flag,.ws-step.show-ok .step-flag{opacity:1;}
+
+/* feedback */
+.fb{border-radius:10px;padding:.7rem 1rem;font-size:12px;font-weight:600;line-height:1.75;margin-top:.45rem;display:none;}
+.fb.show{display:block;}
+.fb-ok{background:rgba(45,191,138,.1);color:var(--green2);border:1px solid var(--green);}
+.fb-no{background:rgba(232,91,91,.09);color:var(--red2);border:1px solid var(--red);}
+.fb sup{font-size:9px;line-height:0;vertical-align:super;}
+.fb sub{font-size:9px;line-height:0;vertical-align:sub;}
+.nxbtn{display:none;width:100%;margin-top:.6rem;padding:11px;border:none;border-radius:10px;font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;background:var(--red);color:#fff;transition:opacity .15s;}
+.nxbtn:hover{opacity:.85;}
+.nxbtn.vis{display:block;}
+
+/* win */
+.win{text-align:center;padding:2rem 1rem;}
+.wemoji{font-size:46px;margin-bottom:.6rem;}
+.wtitle{font-size:24px;font-weight:900;margin-bottom:.4rem;}
+.wsub{font-size:13px;color:var(--text2);margin-bottom:.9rem;line-height:1.7;}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1.1rem;}
+.wstat{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:.85rem;}
+.wstat-n{font-size:28px;font-weight:900;font-family:'Space Mono',monospace;color:var(--red2);margin-bottom:.2rem;}
+.wstat-l{font-size:11px;color:var(--text2);font-weight:600;}
+.wnote{background:var(--s3);border:1px solid var(--bd2);border-radius:12px;padding:.85rem 1.1rem;font-size:13px;color:var(--blue2);line-height:1.75;margin-bottom:.9rem;text-align:left;}
+.wbtns{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.wcta{padding:9px 20px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;}
+.wcta:hover{opacity:.85;}
+.wcta2{background:var(--s1);color:var(--text);border:1.5px solid var(--bd);}
+
+/* inline fraction helper (used in step-body and scene) */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-size:.88em;line-height:1.25;}
+.fr .fn{border-bottom:1.5px solid currentColor;padding:0 4px;}
+.fr .fd{padding:0 4px;}
+</style>
+</head>
+<body>
+
+<!-- HUB -->
+<div id="hub" class="screen active">
+<div class="hub-wrap">
+  <a class="hub-back" href="index.html">&#8592; All Quests</a>
+  <div class="hub-eyebrow">Bonus Challenge</div>
+  <h1 class="hub-title">Error Analysis<br><span class="hub-hl">Quest</span></h1>
+  <p class="hub-sub">Every problem shows a student's worked solution with exactly one mistake hidden inside. Read carefully, click the wrong step, and explain why it fails.</p>
+  <div class="prereq-row">
+    <span class="pchip chip-l">Requires: Limits Quest</span>
+    <span class="pchip chip-d">Requires: Derivatives Quest</span>
+  </div>
+  <button class="start-btn" onclick="startGame()">&#128269; Start Error Hunt &nbsp;&#8594;</button>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-icon">&#128064;</div>
+      <div class="how-title">Read carefully</div>
+      <div class="how-desc">Each solution has exactly one wrong step. The final answer may even look right.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">&#128270;</div>
+      <div class="how-title">Click the bad step</div>
+      <div class="how-desc">No multiple choice &mdash; you have to find the error yourself by clicking the step.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">&#129504;</div>
+      <div class="how-title">Understand why</div>
+      <div class="how-desc">Finding the step is only half the challenge. The explanation reveals the flawed thinking.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">&#128200;</div>
+      <div class="how-title">10 problems</div>
+      <div class="how-desc">5 limits errors, 5 derivative errors, progressively harder.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- GAME -->
+<div id="gamescreen" class="screen">
+<div class="game-wrap">
+  <div class="gtop">
+    <button class="back-btn" onclick="goHub()">&#8592; All Quests</button>
+    <div class="gtitle">Error Analysis Quest</div>
+    <div class="spill" id="gscore">0 pts</div>
+  </div>
+  <div class="pbar"><div class="pfill" id="gpf" style="width:0%"></div></div>
+  <div class="back-nav" id="bnavbar" style="display:none;"></div>
+  <div id="garea"></div>
+</div>
+</div>
+
+<script>
+// NOTE: All HTML is built with DOM methods -- no innerHTML with tags in JS strings
+// Fractions use .fr/.fn/.fd CSS classes created via DOM
+
+// \u2500\u2500 DOM helper \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+function el(tag, props, children) {
+  var e = document.createElement(tag);
+  if (props) Object.keys(props).forEach(function(k) {
+    if (k === 'cls') props[k].split(' ').forEach(function(c){ if(c) e.classList.add(c); });
+    else if (k === 'html') e.innerHTML = props[k];
+    else e.setAttribute(k, props[k]);
+  });
+  if (children) children.forEach(function(c) {
+    if (c) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  });
+  return e;
+}
+
+// Inline fraction: returns a span element
+function frac(num, den) {
+  var wrap = el('span', {cls:'fr'});
+  var fn = el('span', {cls:'fn', html: num});
+  var fd = el('span', {cls:'fd', html: den});
+  wrap.appendChild(fn);
+  wrap.appendChild(fd);
+  return wrap;
+}
+
+// lim notation
+function lim(to) {
+  var s = el('span', {style:'display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin-right:4px;line-height:1.1;font-family:Space Mono,monospace;'});
+  var top = el('span', {style:'font-size:14px;font-weight:700;'}, ['lim']);
+  var bot = el('span', {style:'font-size:10px;color:var(--blue2);'});
+  bot.innerHTML = 'x&nbsp;&rarr;&nbsp;' + to;
+  s.appendChild(top);
+  s.appendChild(bot);
+  return s;
+}
+
+// Text node helper for step content  
+function txt(str) { return document.createTextNode(str); }
+
+// sup element
+function sup(str) { var s = document.createElement('sup'); s.innerHTML = str; return s; }
+
+// \u2500\u2500 PROBLEM DATA \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// Each problem defines:
+//   topic, diff, errorStep (0-based), errorStepLabel (1-based display)
+//   buildScene(el,frac,lim) -> appends children to the scene div
+//   steps: array of {build(container,frac,lim), isError}
+//   errorExplain, correctExplain (HTML strings for feedback - rendered via innerHTML)
+
+// frHTML: builds a stacked fraction string for use in innerHTML explain text
+// Uses backslash-x3c to escape closing tags inside the script
+function frHTML(n, d) {
+  return '<span class="fr"><span class="fn">' + n + '\x3c/span><span class="fd">' + d + '\x3c/span>\x3c/span>';
+}
+
+var EQ = [
+
+// \u2500\u2500 Q1 \u2500\u2500 Limits / Easy \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Limits', diff:'Easy', errorStep:2,
+  buildScene: function(d) {
+    d.appendChild(txt('A student evaluates '));
+    var b = el('strong'); b.appendChild(lim('2')); b.appendChild(frac('x\u00b2\u22124','x\u22122')); d.appendChild(b);
+    d.appendChild(txt(' by direct substitution.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(lim('2')); c.appendChild(frac('x\u00b2\u22124','x\u22122')); } },
+    { build: function(c){ c.appendChild(txt('= ')); c.appendChild(frac('2\u00b2\u22124','2\u22122')); c.appendChild(txt(' = 0/0')); } },
+    { build: function(c){ c.appendChild(txt('Since numerator = 0, the limit = 0')); }, isError:true },
+    { build: function(c){ c.appendChild(txt('\u2234 limit = 0')); } }
+  ],
+  errorExplain:'<strong>Step 3 is wrong.\x3c/strong> Getting 0/0 means the form is <em>indeterminate\x3c/em> &mdash; not that the limit equals zero. 0/0 tells us nothing on its own; it is a signal that we need more work: factor, rationalise, or apply L\'H&ocirc;pital.',
+  correctExplain:'Factor: (x&sup2;&minus;4) = (x+2)(x&minus;2). Cancel (x&minus;2) since x &ne; 2 in a limit. Result: lim(x+2) = 4.'
+},
+
+// \u2500\u2500 Q2 \u2500\u2500 Limits / Easy \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Limits', diff:'Easy', errorStep:2,
+  buildScene: function(d) {
+    d.appendChild(txt('A student evaluates '));
+    var b = el('strong'); b.appendChild(lim('3')); b.appendChild(frac('x\u00b2\u22129','x\u22123')); d.appendChild(b);
+    d.appendChild(txt(' and concludes the limit does not exist.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(lim('3')); c.appendChild(frac('x\u00b2\u22129','x\u22123')); } },
+    { build: function(c){ c.appendChild(txt('Substitute x = 3: ')); c.appendChild(frac('9\u22129','3\u22123')); c.appendChild(txt(' = 0/0')); } },
+    { build: function(c){ c.appendChild(txt('0/0 is undefined, so the limit does not exist (DNE)')); }, isError:true },
+    { build: function(c){ c.appendChild(txt('\u2234 limit = DNE')); } }
+  ],
+  errorExplain:'<strong>Step 3 is wrong.\x3c/strong> 0/0 is <em>indeterminate\x3c/em>, not the same as undefined or DNE. An indeterminate form means we need more work &mdash; here we can factor and cancel. DNE is a conclusion we reach <em>after\x3c/em> investigating, not directly from 0/0.',
+  correctExplain:'Factor: (x&sup2;&minus;9) = (x+3)(x&minus;3). Cancel (x&minus;3). Result: lim(x+3) = 6. The limit exists and equals 6.'
+},
+
+// \u2500\u2500 Q3 \u2500\u2500 Limits / Easy \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Limits', diff:'Easy', errorStep:2,
+  buildScene: function(d) {
+    d.appendChild(txt('A student evaluates '));
+    var b = el('strong'); b.appendChild(lim('1')); b.appendChild(frac('|x\u22121|','x\u22121')); d.appendChild(b);
+    d.appendChild(txt('.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(lim('1')); c.appendChild(frac('|x\u22121|','x\u22121')); } },
+    { build: function(c){ c.appendChild(txt('Substitute x = 1: |0|/0 \u2192 need to simplify')); } },
+    { build: function(c){ c.appendChild(txt('|x\u22121| = (x\u22121) so cancel \u2192 limit = 1')); }, isError:true },
+    { build: function(c){ c.appendChild(txt('\u2234 limit = 1')); } }
+  ],
+  errorExplain:'<strong>Step 3 is wrong.\x3c/strong> |x\u22121| does NOT equal (x\u22121) for all x. When x < 1, |x\u22121| = \u2212(x\u22121). So the left-hand limit = \u22121 and the right-hand limit = +1. Since left \u2260 right, the limit DNE.',
+  correctExplain:'From right (x\u21921\u207a): +1. From left (x\u21921\u207b): \u22121. Left \u2260 Right, so the limit DNE.'
+},
+
+// \u2500\u2500 Q4 \u2500\u2500 Limits / Medium \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Limits', diff:'Medium', errorStep:1,
+  buildScene: function(d) {
+    d.appendChild(txt('A student evaluates '));
+    var b = el('strong'); b.appendChild(lim('&infin;')); b.appendChild(frac('3x\u00b2+2x','x\u00b2\u22125')); d.appendChild(b);
+    d.appendChild(txt(' by dividing through.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(lim('\u221e')); c.appendChild(frac('3x\u00b2+2x','x\u00b2\u22125')); } },
+    { build: function(c){ c.appendChild(txt('Divide top and bottom by x (highest power of denominator)')); }, isError:true },
+    { build: function(c){ c.appendChild(txt('= ')); c.appendChild(lim('\u221e')); c.appendChild(frac('3x+2','x\u22125/x')); } },
+    { build: function(c){ c.appendChild(txt('As x\u2192\u221e, top \u2192 \u221e, bottom \u2192 \u221e \u2192 apply L\'H\u00f4pital \u2192 3/1 = 3')); } }
+  ],
+  errorExplain:'<strong>Step 2 is wrong.\x3c/strong> The highest power in the <em>denominator\x3c/em> is x&sup2;, not x. You must divide every term by x&sup2;. Dividing by x gives a mess that still goes to &infin;/&infin; and creates extra work. The right answer of 3 was reached only by luck (via L\'H&ocirc;pital).',
+  correctExplain:'Divide by x&sup2;: ' + frHTML('3 + 2/x','1 &minus; 5/x&sup2;') + '. As x&rarr;&infin;, 2/x and 5/x&sup2; both &rarr;0. Result: ' + frHTML('3','1') + ' = 3.'
+},
+
+// \u2500\u2500 Q5 \u2500\u2500 Limits / Medium \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Limits', diff:'Medium', errorStep:1,
+  buildScene: function(d) {
+    d.appendChild(txt('A student evaluates '));
+    var b = el('strong'); b.appendChild(lim('0')); b.appendChild(frac('cos(x)','x')); d.appendChild(b);
+    d.appendChild(txt(' using L\'H\u00f4pital\'s Rule.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(lim('0')); c.appendChild(frac('cos(x)','x')); } },
+    { build: function(c){ c.appendChild(txt('Substitute x=0: cos(0)/0 = 1/0 \u2192 apply L\'H\u00f4pital')); }, isError:true },
+    { build: function(c){ c.appendChild(txt('Diff top: \u2212sin(x). Diff bottom: 1')); } },
+    { build: function(c){ c.appendChild(lim('0')); c.appendChild(frac('\u2212sin(x)','1')); c.appendChild(txt(' = 0')); } }
+  ],
+  errorExplain:"<strong>Step 2 is wrong.\x3c/strong> L'H\u00f4pital's Rule ONLY applies to indeterminate forms 0/0 or \u221e/\u221e. Here the form is ' + frHTML('1','0') + ' &mdash; NOT indeterminate. The limit DNE because the left side goes to \u2212\u221e and the right to +\u221e.",
+  correctExplain:'1/0 is not indeterminate. As x\u21920\u207a: ' + frHTML('cos(x)','x') + ' \u2192 +\u221e. As x\u21920\u207b: \u2192 \u2212\u221e. Left \u2260 Right, so the limit DNE. L\'H\u00f4pital does not apply.'
+},
+
+// \u2500\u2500 Q6 \u2500\u2500 Limits / Hard \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Limits', diff:'Hard', errorStep:2,
+  buildScene: function(d) {
+    d.appendChild(txt('A student evaluates '));
+    var b = el('strong'); b.appendChild(lim('0')); b.appendChild(frac('sin(x)','x')); d.appendChild(b);
+    d.appendChild(txt(' using L\'H\u00f4pital\'s Rule.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(lim('0')); c.appendChild(frac('sin(x)','x')); c.appendChild(txt(' \u2192 form: 0/0, L\'H\u00f4pital applies')); } },
+    { build: function(c){ c.appendChild(txt('Differentiate the fraction using the quotient rule')); }, isError:true },
+    { build: function(c){
+        var f = frac('cos(x)\u00b7x \u2212 sin(x)\u00b71','x\u00b2');
+        c.appendChild(txt('= '));
+        c.appendChild(f);
+      }
+    },
+    { build: function(c){ c.appendChild(txt('At x=0: 0/0 again \u2192 confused, writes limit = 0')); } }
+  ],
+  errorExplain:"<strong>Step 2 is wrong.\x3c/strong> L'H\u00f4pital says: differentiate the numerator and denominator <em>separately\x3c/em> \u2014 it is NOT the quotient rule applied to the whole fraction. d/dx[sin(x)] = cos(x) and d/dx[x] = 1, giving lim cos(x)/1 = 1.",
+  correctExplain:"L'H\u00f4pital: differentiate top (cos x) and bottom (1) separately. New limit = " + frHTML('cos(0)','1') + ' = 1.'
+},
+
+// \u2500\u2500 Q7 \u2500\u2500 Derivatives / Easy \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Derivatives', diff:'Easy', errorStep:2,
+  buildScene: function(d) {
+    d.appendChild(txt('A student differentiates '));
+    var b = el('strong'); b.appendChild(txt('f(x) = x')); b.appendChild(sup('3')); d.appendChild(b);
+    d.appendChild(txt(' using the power rule.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(txt('f(x) = x')); c.appendChild(sup('3')); } },
+    { build: function(c){ c.appendChild(txt('Power rule: bring exponent down, reduce by 1')); } },
+    { build: function(c){ c.appendChild(txt("f'(x) = x")); c.appendChild(sup('2')); }, isError:true },
+    { build: function(c){ c.appendChild(txt("\u2234 f'(x) = x")); c.appendChild(sup('2')); } }
+  ],
+  errorExplain:"<strong>Step 3 is wrong.\x3c/strong> The power rule is f'(x) = n\u00b7x<sup>n\u22121\x3c/sup>. The student reduced the exponent correctly (3\u21922) but forgot to multiply by the original exponent (3). The coefficient must come down as a factor.",
+  correctExplain:"f'(x) = 3\u00b7x<sup>3\u22121\x3c/sup> = 3x\u00b2. The exponent comes down as a multiplier AND the exponent decreases by 1."
+},
+
+// \u2500\u2500 Q8 \u2500\u2500 Derivatives / Medium \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Derivatives', diff:'Medium', errorStep:1,
+  buildScene: function(d) {
+    d.appendChild(txt('A student differentiates '));
+    var b = el('strong');
+    b.appendChild(txt('h(x) = x'));
+    b.appendChild(sup('2'));
+    b.appendChild(txt('\u00b7sin(x)'));
+    d.appendChild(b);
+    d.appendChild(txt(' using the product rule.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(txt('h(x) = x')); c.appendChild(sup('2')); c.appendChild(txt('\u00b7sin(x)')); } },
+    { build: function(c){ c.appendChild(txt("(fg)' = f'\u00b7g'")); }, isError:true },
+    { build: function(c){ c.appendChild(txt("f' = 2x,  g' = cos(x)")); } },
+    { build: function(c){ c.appendChild(txt("h'(x) = 2x\u00b7cos(x)")); } }
+  ],
+  errorExplain:"<strong>Step 2 is wrong.\x3c/strong> The product rule is (fg)' = <strong>f'g + fg'\x3c/strong>, NOT f'\u00b7g'. The derivative of a product is NOT the product of the derivatives.",
+  correctExplain:"h'(x) = f'g + fg' = 2x\u00b7sin(x) + x\u00b2\u00b7cos(x). Both terms are required."
+},
+
+// \u2500\u2500 Q9 \u2500\u2500 Derivatives / Medium \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Derivatives', diff:'Medium', errorStep:2,
+  buildScene: function(d) {
+    d.appendChild(txt('A student differentiates '));
+    var b = el('strong');
+    b.appendChild(txt('h(x) = sin(3x'));
+    b.appendChild(sup('2'));
+    b.appendChild(txt(')'));
+    d.appendChild(b);
+    d.appendChild(txt(' using the chain rule.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(txt('h(x) = sin(3x')); c.appendChild(sup('2')); c.appendChild(txt(')')); } },
+    { build: function(c){ c.appendChild(txt('Outer: sin(u), derivative = cos(u). Inner: u = 3x')); c.appendChild(sup('2')); } },
+    { build: function(c){ c.appendChild(txt("h'(x) = cos(3x")); c.appendChild(sup('2')); c.appendChild(txt(')')); }, isError:true },
+    { build: function(c){ c.appendChild(txt("\u2234 h'(x) = cos(3x")); c.appendChild(sup('2')); c.appendChild(txt(')')); } }
+  ],
+  errorExplain:"<strong>Step 3 is wrong.\x3c/strong> The chain rule requires multiplying by the derivative of the inside function. The student differentiated the outside correctly but forgot to multiply by d/dx[3x\u00b2] = 6x.",
+  correctExplain:"h'(x) = cos(3x\u00b2) \u00b7 6x = 6x\u00b7cos(3x\u00b2). Chain rule: outside derivative \u00d7 inside derivative."
+},
+
+// \u2500\u2500 Q10 \u2500\u2500 Derivatives / Hard \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+{
+  topic:'Derivatives', diff:'Hard', errorStep:1,
+  buildScene: function(d) {
+    d.appendChild(txt('A student differentiates '));
+    var b = el('strong');
+    b.appendChild(txt('h(x) = '));
+    b.appendChild(frac('sin(x)','x'));
+    d.appendChild(b);
+    d.appendChild(txt(' using the quotient rule.'));
+  },
+  steps:[
+    { build: function(c){ c.appendChild(txt('h(x) = ')); c.appendChild(frac('sin(x)','x')); } },
+    { build: function(c){ c.appendChild(txt("Quotient rule: (f/g)' = ")); c.appendChild(frac("fg' \u2212 gf'","g\u00b2")); }, isError:true },
+    { build: function(c){ c.appendChild(txt("f = sin(x), f' = cos(x), g = x, g' = 1")); } },
+    { build: function(c){ c.appendChild(txt("h'(x) = ")); c.appendChild(frac('sin(x)\u00b71 \u2212 x\u00b7cos(x)','x\u00b2')); } }
+  ],
+  errorExplain:"<strong>Step 2 is wrong.\x3c/strong> The quotient rule is (f/g)' = <strong>(gf' \u2212 fg') / g\u00b2\x3c/strong> \u2014 denominator\u00b7(top)' minus numerator\u00b7(bottom)'. The student wrote fg' \u2212 gf', which is the negative of the correct formula.",
+  correctExplain:'Correct: ' + frHTML("gf\u2032 \u2212 fg\u2032","g\u00b2") + ' = ' + frHTML('x\u00b7cos(x) \u2212 sin(x)','x\u00b2') + '.'
+}
+
+];
+
+var T = EQ.length; // 10
+
+// \u2500\u2500 GAME STATE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+var GS = { queue:[], hist:[], cur:null, score:0, wrong:false, att:0, reviewing:false };
+
+function goHub() {
+  document.getElementById('hub').classList.add('active');
+  document.getElementById('gamescreen').classList.remove('active');
+}
+
+function startGame() {
+  GS = { queue:EQ.slice(), hist:[], cur:null, score:0, wrong:false, att:0, reviewing:false };
+  document.getElementById('hub').classList.remove('active');
+  document.getElementById('gamescreen').classList.add('active');
+  window.scrollTo(0,0);
+  renderQ();
+}
+
+function renderQ() {
+  if (!GS.queue.length) { winScreen(); return; }
+  GS.cur = GS.queue[0];
+  GS.wrong = false;
+  GS.att = 0;
+  document.getElementById('gpf').style.width = (((T - GS.queue.length) / T) * 100) + '%';
+  renderBackNav();
+  buildCard(GS.cur, T - GS.queue.length + 1, false);
+}
+
+function renderBackNav() {
+  var bn = document.getElementById('bnavbar');
+  bn.innerHTML = '';
+  if (!GS.hist.length) { bn.style.display = 'none'; return; }
+  bn.style.display = 'flex';
+  var lbl = el('span', {cls:'bnav-label'}, ['Back:']);
+  bn.appendChild(lbl);
+  GS.hist.forEach(function(h, i) {
+    var btn = el('button', {cls:'bnav-btn ' + (h==='ok'?'ok':'bad')},
+      [(h==='ok'?'\u2713':'\u2717') + ' Q'+(i+1)]);
+    btn.title = 'Review Q'+(i+1);
+    (function(idx){ btn.addEventListener('click', function(){ reviewQ(idx); }); })(i);
+    bn.appendChild(btn);
+  });
+}
+
+function reviewQ(idx) {
+  GS.reviewing = true;
+  renderBackNav();
+  buildCard(EQ[idx], idx+1, true);
+}
+
+function buildCard(p, n, isReview) {
+  var area = document.getElementById('garea');
+  area.innerHTML = '';
+
+  var card = el('div', {cls:'card'});
+
+  // Problem counter
+  card.appendChild(el('div', {cls:'pctr'}, ['Problem '+n+' of '+T]));
+
+  // Topic + difficulty badges
+  var tr = el('div', {cls:'topic-row'});
+  tr.appendChild(el('span', {cls:'tbadge '+(p.topic==='Limits'?'tb-l':'tb-d')}, [p.topic]));
+  tr.appendChild(el('span', {cls:'dbadge '+(p.diff==='Easy'?'db-e':p.diff==='Medium'?'db-m':'db-h')}, [p.diff]));
+  card.appendChild(tr);
+
+  // Scenario box
+  var scene = el('div', {cls:'scene'});
+  p.buildScene(scene);
+  card.appendChild(scene);
+
+  // Worked solution label
+  card.appendChild(el('div', {cls:'ws-heading'},
+    [isReview ? 'Error revealed:' : "A student's working \u2014 click the step you think is wrong:"]));
+
+  // Instruction (active mode only)
+  if (!isReview) {
+    var instr = el('div', {cls:'instr'});
+    instr.innerHTML = '&#128270; Click the step containing the error';
+    card.appendChild(instr);
+  }
+
+  // Steps
+  var wsWrap = el('div', {cls:'ws-wrap'});
+  p.steps.forEach(function(step, si) {
+    var row = el('div', {cls:'ws-step' + (isReview ? (si===p.errorStep?' show-error':' show-ok') : ' clickable')});
+
+    var num = el('div', {cls:'step-num'}, [String(si+1)]);
+
+    var body = el('div', {cls:'step-body'});
+    step.build(body);
+
+    var flag = el('div', {cls:'step-flag'},
+      [isReview ? (si===p.errorStep ? '\u274c' : '\u2713') : '']);
+
+    row.appendChild(num);
+    row.appendChild(body);
+    row.appendChild(flag);
+
+    if (!isReview) {
+      (function(stepIdx, rowEl) {
+        rowEl.addEventListener('mouseenter', function(){
+          if (!rowEl.classList.contains('show-error') && !rowEl.classList.contains('show-ok'))
+            rowEl.style.background = 'rgba(255,255,255,0.04)';
+        });
+        rowEl.addEventListener('mouseleave', function(){
+          if (!rowEl.classList.contains('flash-wrong'))
+            rowEl.style.background = '';
+        });
+        rowEl.addEventListener('click', function(){ handleAnswer(stepIdx); });
+      })(si, row);
+    }
+    wsWrap.appendChild(row);
+  });
+  card.appendChild(wsWrap);
+
+  // Feedback box
+  var fb = el('div', {cls:'fb', id:'gfb'});
+  if (isReview) {
+    fb.className = 'fb show fb-ok';
+    fb.innerHTML = '<strong>Error explained:\x3c/strong> ' + p.errorExplain
+      + '<br><br><strong>Correct working:\x3c/strong> ' + p.correctExplain;
+  }
+  card.appendChild(fb);
+
+  // Next / Back-to-current button
+  var nx = el('button', {cls:'nxbtn'+(isReview?' vis':''), id:'gnx'});
+  nx.textContent = isReview ? 'Back to current \u2192' : 'Next \u2192';
+  nx.addEventListener('click', isReview ? function(){
+    GS.reviewing = false;
+    renderBackNav();
+    buildCard(GS.cur, T - GS.queue.length + 1, false);
+  } : function(){ GS.queue.shift(); renderQ(); });
+  card.appendChild(nx);
+
+  area.appendChild(card);
+}
+
+function handleAnswer(stepIdx) {
+  var p = GS.cur;
+  var rows = document.querySelectorAll('#garea .ws-step');
+
+  if (stepIdx === p.errorStep) {
+    // CORRECT
+    var pts = GS.wrong ? 5 : 10;
+    GS.score += pts;
+    GS.hist.push('ok');
+    document.getElementById('gscore').textContent = GS.score + ' pts';
+    renderBackNav();
+
+    rows.forEach(function(row, si) {
+      row.classList.remove('clickable');
+      row.style.background = '';
+      row.classList.add(si === p.errorStep ? 'show-error' : 'show-ok');
+      var flag = row.querySelector('.step-flag');
+      if (flag) { flag.textContent = si === p.errorStep ? '\u274c' : '\u2713'; }
+    });
+
+    var fb = document.getElementById('gfb');
+    if (fb) {
+      fb.className = 'fb show fb-ok';
+      fb.innerHTML = '<strong>Correct!\x3c/strong> ' + p.errorExplain
+        + '<br><br><strong>Correct working:\x3c/strong> ' + p.correctExplain
+        + '<em style="display:block;margin-top:.4rem;opacity:.6;font-size:10px">+'
+        + pts + ' pts' + (GS.wrong ? ' (partial)' : '') + '\x3c/em>';
+    }
+    var nx = document.getElementById('gnx');
+    if (nx) nx.classList.add('vis');
+
+  } else {
+    // WRONG
+    GS.wrong = true;
+    GS.att++;
+    var wrongRow = rows[stepIdx];
+    if (wrongRow) {
+      wrongRow.classList.add('flash-wrong');
+      setTimeout(function(){ wrongRow.classList.remove('flash-wrong'); wrongRow.style.background=''; }, 400);
+    }
+    var fb = document.getElementById('gfb');
+    if (fb) {
+      fb.className = 'fb show fb-no';
+      var msgs = [
+        'Not that step. Read each line carefully \u2014 where does the logic first break down?',
+        'Still not right. Check whether the student used the correct formula for this rule.',
+        'Hint: the error is in step ' + (p.errorStep + 1) + '. Re-read it carefully.'
+      ];
+      fb.textContent = msgs[Math.min(GS.att - 1, msgs.length - 1)];
+    }
+    // After 3 wrong, force reveal
+    if (GS.att >= 3) {
+      GS.hist.push('bad');
+      document.getElementById('gscore').textContent = GS.score + ' pts';
+      renderBackNav();
+      rows.forEach(function(row, si) {
+        row.classList.remove('clickable');
+        row.style.background = '';
+        row.classList.add(si === p.errorStep ? 'show-error' : 'show-ok');
+        var flag = row.querySelector('.step-flag');
+        if (flag) { flag.textContent = si === p.errorStep ? '\u274c' : '\u2713'; }
+      });
+      if (fb) {
+        fb.className = 'fb show fb-no';
+        fb.innerHTML = '<strong>Error was in step ' + (p.errorStep+1) + '.\x3c/strong> '
+          + p.errorExplain + '<br><br><strong>Correct:\x3c/strong> ' + p.correctExplain;
+      }
+      var nx = document.getElementById('gnx');
+      if (nx) nx.classList.add('vis');
+    }
+  }
+}
+
+function winScreen() {
+  document.getElementById('gpf').style.width = '100%';
+  renderBackNav();
+  var perfect = GS.hist.filter(function(h){ return h==='ok'; }).length;
+  var pct = Math.round((perfect/T)*100);
+  var medal = pct===100 ? '\ud83e\udd47' : pct>=70 ? '\ud83e\udd48' : '\ud83e\udd49';
+  var area = document.getElementById('garea');
+  area.innerHTML = '';
+  var win = el('div', {cls:'win'});
+  win.innerHTML = '<div class="wemoji">'+medal+'\x3c/div>'
+    + '<div class="wtitle">Error Hunt complete!\x3c/div>'
+    + '<div class="wsub">You reviewed 10 worked solutions and hunted down the mistakes.\x3c/div>'
+    + '<div class="wgrid">'
+    + '<div class="wstat"><div class="wstat-n">'+GS.score+'\x3c/div><div class="wstat-l">Total points\x3c/div>\x3c/div>'
+    + '<div class="wstat"><div class="wstat-n">'+perfect+'/10\x3c/div><div class="wstat-l">Found first try\x3c/div>\x3c/div>'
+    + '<div class="wstat"><div class="wstat-n">'+pct+'%\x3c/div><div class="wstat-l">Accuracy\x3c/div>\x3c/div>'
+    + '\x3c/div>'
+    + '<div class="wnote">Error spotting is one of the deepest ways to understand maths. When you can explain <em>why\x3c/em> a step is wrong, you truly understand why the correct method works.'
+    + (pct < 80 ? '<br><br>Consider replaying &mdash; each error here represents a classic exam mistake.' : '') + '\x3c/div>'
+    + '<div class="wbtns"><button class="wcta" onclick="startGame()">Play again\x3c/button><button class="wcta wcta2" onclick="goHub()">&#8592; Hub\x3c/button>\x3c/div>';
+  area.appendChild(win);
+}
+</script>
+</body>
+</html>

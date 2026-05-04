@@ -9,63 +9,76 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --bg:#0d0f1a;--s1:#151827;--s2:#1c1f30;--bd:#2a2d45;--bd2:#4a4fcc;
-  --blue:#5B7FE8;--blue2:#8AAFF5;
+  --blue:#5B7FE8;--blue2:#8AAFF5;--blue3:#C5D8FF;
   --purple:#9B6FE8;--purple2:#C4A8F5;
   --green:#2DBF8A;--green2:#7EECC4;
   --orange:#F0853A;--orange2:#F5B07A;
+  --red:#E85B5B;--red2:#F59898;
   --amber:#F5C842;
   --text:#ECEEF8;--text2:#8B90B8;--text3:#555878;
 }
 html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;}
 
 /* ── HERO ── */
-.hero{text-align:center;padding:clamp(3rem,8vw,5rem) 1.5rem clamp(1.5rem,4vw,2.5rem);max-width:760px;margin:0 auto;}
-.brand{font-size:11px;font-weight:800;letter-spacing:.25em;text-transform:uppercase;color:var(--blue2);margin-bottom:.75rem;}
-.logo{font-size:clamp(38px,8vw,68px);font-weight:900;letter-spacing:-2px;line-height:1.0;margin-bottom:.85rem;}
+.hero{text-align:center;padding:clamp(3rem,8vw,5rem) 1.5rem clamp(1.5rem,3vw,2rem);max-width:820px;margin:0 auto;}
+.brand{font-size:11px;font-weight:800;letter-spacing:.25em;text-transform:uppercase;color:var(--blue2);margin-bottom:.6rem;}
+.logo{font-size:clamp(38px,8vw,66px);font-weight:900;letter-spacing:-2px;line-height:1.0;margin-bottom:.85rem;}
 .logo .m{color:var(--purple);}
 .logo .ath{color:var(--text);}
 .logo .el{color:var(--orange);}
 .logo .icious{color:var(--text2);}
-.tagline{font-size:clamp(14px,1.8vw,18px);color:var(--text2);line-height:1.7;max-width:480px;margin:0 auto 1.25rem;}
-.badge-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:0;}
+.tagline{font-size:clamp(13px,1.7vw,17px);color:var(--text2);line-height:1.75;max-width:500px;margin:0 auto 1.25rem;}
+.badge-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:99px;font-size:11px;font-weight:700;}
 .badge-b{background:rgba(91,127,232,.12);border:1px solid rgba(91,127,232,.3);color:var(--blue2);}
 .badge-p{background:rgba(155,111,232,.12);border:1px solid rgba(155,111,232,.3);color:var(--purple2);}
 .badge-g{background:rgba(45,191,138,.12);border:1px solid rgba(45,191,138,.3);color:var(--green2);}
 
 /* ── QUEST GRID ── */
-.quests{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;max-width:760px;margin:0 auto;padding:2.5rem 1.5rem 4rem;}
+.quests{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.4rem;max-width:920px;margin:0 auto;padding:2.5rem 1.5rem 4rem;}
+
 .quest-card{background:var(--s1);border:1.5px solid var(--bd);border-radius:20px;overflow:hidden;transition:all .25s;text-decoration:none;color:inherit;display:flex;flex-direction:column;}
 .quest-card:hover{transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,0,0,.45);}
-.card-top{padding:1.75rem 1.75rem 1.25rem;flex:1;}
-.card-accent{height:4px;border-radius:0;}
-.limits-accent{background:linear-gradient(90deg,var(--purple),var(--blue));}
-.deriv-accent{background:linear-gradient(90deg,var(--orange),var(--amber));}
-.quest-num{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem;}
-.limits-card .quest-num{color:var(--purple2);}
-.deriv-card .quest-num{color:var(--orange2);}
-.quest-title{font-size:clamp(22px,3.5vw,28px);font-weight:900;letter-spacing:-.5px;margin-bottom:.5rem;line-height:1.15;}
-.quest-desc{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:1.25rem;}
-.quest-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem;}
-.qpill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;}
-.limits-card .qpill{background:rgba(155,111,232,.15);color:var(--purple2);}
-.deriv-card .qpill{background:rgba(240,133,58,.15);color:var(--orange2);}
-.quest-meta{display:flex;gap:12px;font-size:11px;color:var(--text3);font-weight:600;margin-bottom:1.5rem;}
-.quest-meta span{display:flex;align-items:center;gap:4px;}
-.card-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;border:none;cursor:pointer;width:100%;transition:all .15s;letter-spacing:.01em;}
-.limits-card .card-btn{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;}
-.deriv-card .card-btn{background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;}
-.quest-card:hover .card-btn{opacity:.9;}
 
-/* ── COMING SOON ── */
-.coming-soon{opacity:.5;pointer-events:none;cursor:default;}
-.cs-chip{display:inline-block;background:var(--s2);border:1px solid var(--bd);border-radius:99px;padding:2px 10px;font-size:10px;font-weight:700;color:var(--text3);margin-bottom:.6rem;}
+.card-accent{height:4px;}
+.acc-limits{background:linear-gradient(90deg,var(--purple),var(--blue));}
+.acc-deriv{background:linear-gradient(90deg,var(--orange),var(--amber));}
+.acc-error{background:linear-gradient(90deg,var(--red),var(--orange));}
+
+.card-body{padding:1.6rem 1.6rem 1.2rem;flex:1;}
+
+.quest-num{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem;}
+.limits-card .quest-num{color:var(--purple2);}
+.deriv-card  .quest-num{color:var(--orange2);}
+.error-card  .quest-num{color:var(--red2);}
+
+.quest-title{font-size:clamp(20px,3vw,26px);font-weight:900;letter-spacing:-.4px;margin-bottom:.45rem;line-height:1.15;}
+.quest-desc{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:1.1rem;}
+
+.quest-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1.25rem;}
+.pill{font-size:10px;font-weight:700;padding:2px 9px;border-radius:99px;}
+.limits-card .pill{background:rgba(155,111,232,.15);color:var(--purple2);}
+.deriv-card  .pill{background:rgba(240,133,58,.15);color:var(--orange2);}
+.error-card  .pill{background:rgba(232,91,91,.15);color:var(--red2);}
+
+.quest-meta{display:flex;gap:12px;font-size:11px;color:var(--text3);font-weight:600;margin-bottom:1.4rem;flex-wrap:wrap;}
+
+.card-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;border:none;cursor:pointer;width:100%;letter-spacing:.01em;transition:opacity .15s;}
+.limits-card .card-btn{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;}
+.deriv-card  .card-btn{background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;}
+.error-card  .card-btn{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;}
+.card-btn:hover{opacity:.88;}
+
+/* ── PREREQ NOTE ── */
+.prereq-note{font-size:11px;color:var(--text3);text-align:center;padding:0 1.5rem 2.5rem;max-width:920px;margin:0 auto;}
+.prereq-note span{color:var(--blue2);}
 
 /* ── FOOTER ── */
 footer{text-align:center;padding:1.5rem;border-top:1px solid var(--bd);font-size:11px;color:var(--text3);}
 footer a{color:var(--blue2);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
 
-@media(max-width:480px){
+@media(max-width:600px){
   .quests{grid-template-columns:1fr;}
 }
 </style>
@@ -77,7 +90,7 @@ footer a{color:var(--blue2);text-decoration:none;}
   <h1 class="logo">
     <span class="m">M</span><span class="ath">ath</span><span class="el">el</span><span class="icious">icious</span>
   </h1>
-  <p class="tagline">Learn calculus by doing, not watching. Drag sliders, fill blanks, and build real intuition one quest at a time.</p>
+  <p class="tagline">Learn calculus by doing, not watching. Drag sliders, fill blanks, spot mistakes &mdash; and build real intuition one quest at a time.</p>
   <div class="badge-row">
     <span class="badge badge-b">&#127381; Free &amp; open</span>
     <span class="badge badge-p">No login required</span>
@@ -89,22 +102,22 @@ footer a{color:var(--blue2);text-decoration:none;}
 
   <!-- LIMITS QUEST -->
   <a class="quest-card limits-card" href="Limits.html">
-    <div class="card-accent limits-accent"></div>
-    <div class="card-top">
-      <div class="quest-num">Quest 1</div>
+    <div class="card-accent acc-limits"></div>
+    <div class="card-body">
+      <div class="quest-num">Quest 1 &mdash; Start here</div>
       <div class="quest-title">Limits Quest</div>
-      <p class="quest-desc">Build intuition for what limits mean before touching any algebra. Use sliders to approach values from both sides and see what really happens.</p>
+      <p class="quest-desc">Build intuition for what limits mean before touching any algebra. Use interactive sliders to approach values from both sides and see what really happens.</p>
       <div class="quest-pills">
-        <span class="qpill">Direct substitution</span>
-        <span class="qpill">One-sided limits</span>
-        <span class="qpill">Holes &amp; asymptotes</span>
-        <span class="qpill">DNE</span>
-        <span class="qpill">Continuity</span>
+        <span class="pill">Direct substitution</span>
+        <span class="pill">One-sided limits</span>
+        <span class="pill">Holes &amp; asymptotes</span>
+        <span class="pill">DNE</span>
+        <span class="pill">Squeeze theorem</span>
       </div>
       <div class="quest-meta">
         <span>&#9679; 3 parts</span>
         <span>&#9679; 32 problems</span>
-        <span>&#9679; Drag-drop + MCQ</span>
+        <span>&#9679; Sliders + drag-drop</span>
       </div>
     </div>
     <button class="card-btn">Start Limits Quest &nbsp;&#8594;</button>
@@ -112,31 +125,55 @@ footer a{color:var(--blue2);text-decoration:none;}
 
   <!-- DERIVATIVES QUEST -->
   <a class="quest-card deriv-card" href="Derivatives.html">
-    <div class="card-accent deriv-accent"></div>
-    <div class="card-top">
-      <div class="quest-num">Quest 2</div>
+    <div class="card-accent acc-deriv"></div>
+    <div class="card-body">
+      <div class="quest-num">Quest 2 &mdash; After Quest 1</div>
       <div class="quest-title">Derivatives Quest</div>
-      <p class="quest-desc">From slopes on a curve to the full toolkit of differentiation rules. Builds directly on the limits you explored in Quest 1.</p>
+      <p class="quest-desc">From slopes on a curve to the full differentiation toolkit. Builds directly on limits &mdash; the two-slider differentiability check connects both quests.</p>
       <div class="quest-pills">
-        <span class="qpill">Tangent lines</span>
-        <span class="qpill">Power rule</span>
-        <span class="qpill">Chain rule</span>
-        <span class="qpill">Product &amp; Quotient</span>
-        <span class="qpill">L&apos;H&ocirc;pital</span>
+        <span class="pill">Tangent lines</span>
+        <span class="pill">Power rule</span>
+        <span class="pill">Chain rule</span>
+        <span class="pill">Product &amp; Quotient</span>
+        <span class="pill">L&apos;H&ocirc;pital</span>
       </div>
       <div class="quest-meta">
         <span>&#9679; 3 parts</span>
         <span>&#9679; 30 problems</span>
-        <span>&#9679; Drag-drop + MCQ</span>
+        <span>&#9679; Graphs + drag-drop + MCQ</span>
       </div>
     </div>
     <button class="card-btn">Start Derivatives Quest &nbsp;&#8594;</button>
   </a>
 
+  <!-- ERROR ANALYSIS QUEST -->
+  <a class="quest-card error-card" href="ErrorAnalysis.html">
+    <div class="card-accent acc-error"></div>
+    <div class="card-body">
+      <div class="quest-num">Bonus Challenge &mdash; After both quests</div>
+      <div class="quest-title">Error Analysis Quest</div>
+      <p class="quest-desc">Every problem shows a student's worked solution with exactly one mistake hidden inside. Find the wrong step and explain why it fails.</p>
+      <div class="quest-pills">
+        <span class="pill">Spot the mistake</span>
+        <span class="pill">Limits errors</span>
+        <span class="pill">Derivative errors</span>
+        <span class="pill">L&apos;H&ocirc;pital traps</span>
+      </div>
+      <div class="quest-meta">
+        <span>&#9679; 10 problems</span>
+        <span>&#9679; Click the wrong step</span>
+        <span>&#9679; No multiple choice</span>
+      </div>
+    </div>
+    <button class="card-btn">&#128269; Start Error Hunt &nbsp;&#8594;</button>
+  </a>
+
 </div>
 
+<p class="prereq-note">&#128161; <span>Recommended order:</span> Limits Quest &rarr; Derivatives Quest &rarr; Error Analysis. Each quest builds on the previous one.</p>
+
 <footer>
-  Built with curiosity &mdash; <a href="https://matheliciouslearning.com" target="_blank">Mathelicious Learning</a>
+  Built with curiosity &mdash; <a href="https://rkchina79.github.io/Mathelicious-Learning/" target="_blank">Mathelicious Learning</a>
 </footer>
 
 </body>
